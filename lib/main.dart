@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'widgets/holder.dart';
 
@@ -12,16 +11,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.manual,
-      overlays: [],
-    );
     return MaterialApp(
       title: 'Abacus',
       theme: ThemeData.dark(),
       home: Container(
         color: Colors.black,
-        child: Holder(),
+        child: const Holder(),
       ),
     );
   }

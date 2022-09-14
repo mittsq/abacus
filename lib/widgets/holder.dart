@@ -1,5 +1,6 @@
 import 'package:abacus/model/count_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:wakelock/wakelock.dart';
 
 import 'counter.dart';
@@ -12,7 +13,7 @@ class Holder extends StatefulWidget {
 }
 
 class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
-  bool _showSettings = false;
+  bool _showMenu = false;
   var duration = const Duration(milliseconds: 200);
   late AnimationController _menuController;
 
@@ -26,6 +27,7 @@ class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
       duration: duration,
     );
     Wakelock.enable();
+    showOverlays(false);
   }
 
   @override
@@ -34,22 +36,32 @@ class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
     Wakelock.disable();
   }
 
-  void _openSettings() {
+  void _openMenu({bool? visible}) {
     setState(() {
-      _showSettings = !_showSettings;
-      if (_showSettings) {
+      _showMenu = visible ?? !_showMenu;
+      if (_showMenu) {
         _menuController.forward();
+        showOverlays(true);
       } else {
         _menuController.reverse();
+        showOverlays(false);
       }
     });
   }
 
-  void _reset(BuildContext context) {
+  void _reset() {
     setState(() {
-      player1.value = 20;
-      player2.value = 20;
+      player1.reset();
+      player2.reset();
     });
+    _openMenu(visible: false);
+  }
+
+  void showOverlays(bool show) {
+    SystemChrome.setEnabledSystemUIMode(
+      show ? SystemUiMode.edgeToEdge : SystemUiMode.immersiveSticky,
+      // overlays: SystemUiOverlay.values,
+    );
   }
 
   @override
@@ -71,8 +83,8 @@ class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
               duration: const Duration(milliseconds: 500),
               curve: Curves.easeOutExpo,
               child: SizedBox(
-                height: _showSettings ? 100 : 0,
-                width: _showSettings ? 100 : 0,
+                height: _showMenu ? 100 : 0,
+                width: _showMenu ? 100 : 0,
               ),
             ),
             Expanded(
@@ -88,7 +100,7 @@ class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
             child: Material(
               color: Colors.black,
               child: InkWell(
-                onTap: _openSettings,
+                onTap: _openMenu,
                 child: Padding(
                   padding: const EdgeInsets.all(10),
                   child: AnimatedIcon(
@@ -103,7 +115,7 @@ class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
         ),
         Center(
           child: AnimatedOpacity(
-            opacity: _showSettings ? 1 : 0,
+            opacity: _showMenu ? 1 : 0,
             duration: duration,
             curve: Curves.ease,
             child: Flex(
@@ -115,7 +127,7 @@ class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
                       child: Material(
                         type: MaterialType.transparency,
                         child: InkWell(
-                          onTap: _showSettings ? () => _reset(context) : null,
+                          onTap: _showMenu ? () => _reset() : null,
                           child: Padding(
                             padding: const EdgeInsets.all(10),
                             child: Icon(
