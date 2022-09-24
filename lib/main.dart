@@ -1,8 +1,11 @@
+import 'package:abacus/widgets/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'widgets/holder.dart';
 
-void main() {
+void main() async {
+  Settings.prefs = await SharedPreferences.getInstance();
   runApp(const MyApp());
 }
 

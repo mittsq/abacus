@@ -1,9 +1,8 @@
 class CountWrapper {
-  CountWrapper(this._start) {
-    reset();
+  CountWrapper(int start) {
+    reset(start);
   }
 
-  final int _start;
   late int _count;
 
   int operator +(int other) {
@@ -17,7 +16,7 @@ class CountWrapper {
   int get value => _count;
   set value(v) => _count = v;
 
-  void reset() {
-    _count = _start;
+  void reset(int start) {
+    _count = start;
   }
 }

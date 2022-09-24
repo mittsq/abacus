@@ -1,4 +1,5 @@
 import 'package:abacus/model/count_wrapper.dart';
+import 'package:abacus/widgets/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wakelock/wakelock.dart';
@@ -17,7 +18,8 @@ class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
   var duration = const Duration(milliseconds: 200);
   late AnimationController _menuController;
 
-  CountWrapper player1 = CountWrapper(20), player2 = CountWrapper(20);
+  late CountWrapper player1, player2;
+  int get _starting => Settings.prefs!.getInt('starting') ?? 20;
 
   @override
   void initState() {
@@ -27,7 +29,10 @@ class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
       duration: duration,
     );
     Wakelock.enable();
-    showOverlays(false);
+    _showOverlays(false);
+
+    player1 = CountWrapper(_starting);
+    player2 = CountWrapper(_starting);
   }
 
   @override
@@ -41,23 +46,33 @@ class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
       _showMenu = visible ?? !_showMenu;
       if (_showMenu) {
         _menuController.forward();
-        showOverlays(true);
+        _showOverlays(true);
       } else {
         _menuController.reverse();
-        showOverlays(false);
+        _showOverlays(false);
       }
     });
   }
 
   void _reset() {
     setState(() {
-      player1.reset();
-      player2.reset();
+      player1.reset(_starting);
+      player2.reset(_starting);
     });
     _openMenu(visible: false);
   }
 
-  void showOverlays(bool show) {
+  void _openSettings() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const Settings(),
+      ),
+    );
+    _openMenu(visible: false);
+  }
+
+  void _showOverlays(bool show) {
     SystemChrome.setEnabledSystemUIMode(
       show ? SystemUiMode.edgeToEdge : SystemUiMode.immersiveSticky,
       // overlays: SystemUiOverlay.values,
@@ -76,7 +91,7 @@ class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
             Expanded(
               child: Counter(
                 counter: player2,
-                isOpponent: !isLandscape,
+                isFlipped: !isLandscape,
               ),
             ),
             AnimatedSize(
@@ -150,8 +165,7 @@ class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
                       child: Material(
                         type: MaterialType.transparency,
                         child: InkWell(
-                          onTap:
-                              null, // _showSettings ? () => _reset(context) : null,
+                          onTap: _showMenu ? () => _openSettings() : null,
                           child: Padding(
                             padding: const EdgeInsets.all(10),
                             child: Icon(

@@ -5,21 +5,18 @@ import 'package:abacus/model/count_wrapper.dart';
 import 'package:flutter/material.dart';
 
 class Counter extends StatefulWidget {
-  const Counter({Key? key, required this.counter, this.isOpponent = false})
+  const Counter({Key? key, required this.counter, this.isFlipped = false})
       : super(key: key);
 
   final CountWrapper counter;
-  final bool isOpponent;
+  final bool isFlipped;
 
   @override
-  State<StatefulWidget> createState() {
-    return _CounterState();
-  }
+  State<StatefulWidget> createState() => _CounterState();
 }
 
 class _CounterState extends State<Counter> {
-  // late CountWrapper widget.counter = CountWrapper(20);
-  late int _commitCount = 20;
+  late int _commitCount = widget.counter.value;
   bool _commit = true;
   double? _offset;
   int? _oldCount;
@@ -48,7 +45,7 @@ class _CounterState extends State<Counter> {
   void _dragUpdate(DragUpdateDetails args) {
     var delta = args.globalPosition.dy - _offset!;
     var newCount =
-        _oldCount! - delta / _resistance * (widget.isOpponent ? -1 : 1);
+        _oldCount! - delta / _resistance * (widget.isFlipped ? -1 : 1);
 
     setState(() {
       _setCount(newCount.round());
@@ -87,10 +84,11 @@ class _CounterState extends State<Counter> {
             fontFeatures: [
               FontFeature.tabularFigures(),
             ],
+            fontWeight: FontWeight.normal,
           ),
         );
 
-    var miniStyle = Theme.of(context).textTheme.titleLarge?.merge(
+    var miniStyle = Theme.of(context).textTheme.headlineSmall?.merge(
           TextStyle(
             color: countStyle?.color,
             fontFeatures: const [
@@ -102,7 +100,7 @@ class _CounterState extends State<Counter> {
     String miniText;
     var diff = widget.counter - _commitCount;
     if (diff == 0) {
-      miniText = '±0';
+      miniText = ''; // '\u20070';
     } else if (diff > 0) {
       miniText = '+$diff';
     } else {
@@ -112,9 +110,9 @@ class _CounterState extends State<Counter> {
     return Padding(
       padding: EdgeInsets.fromLTRB(
         10,
-        widget.isOpponent ? 10 : 5,
+        widget.isFlipped ? 10 : 5,
         10,
-        widget.isOpponent ? 5 : 10,
+        widget.isFlipped ? 5 : 10,
       ),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(10)),
@@ -124,7 +122,7 @@ class _CounterState extends State<Counter> {
               color: Colors.grey.withAlpha(32),
               child: Center(
                 child: RotatedBox(
-                  quarterTurns: widget.isOpponent ? 2 : 0,
+                  quarterTurns: widget.isFlipped ? 2 : 0,
                   child: Row(
                     children: [
                       Expanded(
@@ -164,7 +162,7 @@ class _CounterState extends State<Counter> {
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTapUp: widget.isOpponent ? _decrement : _increment,
+                    onTapUp: widget.isFlipped ? _decrement : _increment,
                     onVerticalDragStart: _dragStart,
                     onVerticalDragUpdate: _dragUpdate,
                     onVerticalDragEnd: _dragEnd,
@@ -172,7 +170,7 @@ class _CounterState extends State<Counter> {
                 ),
                 Expanded(
                   child: GestureDetector(
-                    onTapUp: widget.isOpponent ? _increment : _decrement,
+                    onTapUp: widget.isFlipped ? _increment : _decrement,
                     onVerticalDragStart: _dragStart,
                     onVerticalDragUpdate: _dragUpdate,
                     onVerticalDragEnd: _dragEnd,
