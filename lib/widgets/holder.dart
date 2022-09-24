@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:abacus/model/count_wrapper.dart';
 import 'package:abacus/widgets/settings.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:wakelock/wakelock.dart';
 
 import 'counter.dart';
+import 'needle.dart';
 
 class Holder extends StatefulWidget {
   const Holder({Key? key}) : super(key: key);
@@ -15,6 +18,7 @@ class Holder extends StatefulWidget {
 
 class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
   bool _showMenu = false;
+  bool _showNeedle = false;
   var duration = const Duration(milliseconds: 200);
   late AnimationController _menuController;
 
@@ -37,6 +41,7 @@ class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
 
   @override
   void dispose() {
+    _menuController.dispose();
     super.dispose();
     Wakelock.disable();
   }
@@ -54,12 +59,20 @@ class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
     });
   }
 
-  void _reset() {
+  void _reset() async {
     setState(() {
       player1.reset(_starting);
       player2.reset(_starting);
+      _showNeedle = false;
     });
     _openMenu(visible: false);
+
+    var auto = Settings.prefs!.getBool('autoDecide') ?? false;
+    if (!auto) return;
+    await Future.delayed(duration * 2);
+    setState(() {
+      _showNeedle = true;
+    });
   }
 
   void _openSettings() {
@@ -91,7 +104,7 @@ class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
             Expanded(
               child: Counter(
                 counter: player2,
-                isFlipped: !isLandscape,
+                isFlipped: true,
               ),
             ),
             AnimatedSize(
@@ -183,6 +196,15 @@ class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
                   ),
                 ),
               ],
+            ),
+          ),
+        ),
+        IgnorePointer(
+          child: AnimatedOpacity(
+            opacity: _showNeedle ? 1 : 0,
+            duration: duration,
+            child: const Center(
+              child: NeedleWidget(),
             ),
           ),
         ),

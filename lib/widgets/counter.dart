@@ -44,8 +44,10 @@ class _CounterState extends State<Counter> {
 
   void _dragUpdate(DragUpdateDetails args) {
     var delta = args.globalPosition.dy - _offset!;
-    var newCount =
-        _oldCount! - delta / _resistance * (widget.isFlipped ? -1 : 1);
+    var isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    var newCount = _oldCount! -
+        delta / _resistance * ((widget.isFlipped && !isLandscape) ? -1 : 1);
 
     setState(() {
       _setCount(newCount.round());
@@ -97,6 +99,25 @@ class _CounterState extends State<Counter> {
           ),
         );
 
+    var isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    EdgeInsetsGeometry padding;
+    if (isLandscape) {
+      padding = EdgeInsets.fromLTRB(
+        widget.isFlipped ? 10 : 5,
+        10,
+        widget.isFlipped ? 5 : 10,
+        10,
+      );
+    } else {
+      padding = EdgeInsets.fromLTRB(
+        10,
+        widget.isFlipped ? 10 : 5,
+        10,
+        widget.isFlipped ? 5 : 10,
+      );
+    }
+
     String miniText;
     var diff = widget.counter - _commitCount;
     if (diff == 0) {
@@ -108,78 +129,77 @@ class _CounterState extends State<Counter> {
     }
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(
-        10,
-        widget.isFlipped ? 10 : 5,
-        10,
-        widget.isFlipped ? 5 : 10,
-      ),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-        child: Stack(
-          children: [
-            Container(
+      padding: padding,
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
               color: Colors.grey.withAlpha(32),
-              child: Center(
-                child: RotatedBox(
-                  quarterTurns: widget.isFlipped ? 2 : 0,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Container(),
-                      ),
-                      SizedBox(
-                        width: 175,
-                        child: Center(
-                          child: Text(
-                            '${widget.counter.value}',
-                            style: countStyle,
-                          ),
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+            ),
+            child: Center(
+              child: RotatedBox(
+                quarterTurns: (widget.isFlipped && !isLandscape) ? 2 : 0,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(),
+                    ),
+                    SizedBox(
+                      width: 175,
+                      child: Center(
+                        child: Text(
+                          '${widget.counter.value}',
+                          style: countStyle,
                         ),
                       ),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: AnimatedOpacity(
-                              opacity: _commit ? 0 : 1,
-                              duration: const Duration(milliseconds: 200),
-                              child: Text(
-                                miniText,
-                                style: miniStyle,
-                              ),
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: AnimatedOpacity(
+                            opacity: _commit ? 0 : 1,
+                            duration: const Duration(milliseconds: 200),
+                            child: Text(
+                              miniText,
+                              style: miniStyle,
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
-            Column(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTapUp: widget.isFlipped ? _decrement : _increment,
-                    onVerticalDragStart: _dragStart,
-                    onVerticalDragUpdate: _dragUpdate,
-                    onVerticalDragEnd: _dragEnd,
-                  ),
+          ),
+          Column(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTapUp: (widget.isFlipped && !isLandscape)
+                      ? _decrement
+                      : _increment,
+                  onVerticalDragStart: _dragStart,
+                  onVerticalDragUpdate: _dragUpdate,
+                  onVerticalDragEnd: _dragEnd,
                 ),
-                Expanded(
-                  child: GestureDetector(
-                    onTapUp: widget.isFlipped ? _increment : _decrement,
-                    onVerticalDragStart: _dragStart,
-                    onVerticalDragUpdate: _dragUpdate,
-                    onVerticalDragEnd: _dragEnd,
-                  ),
+              ),
+              Expanded(
+                child: GestureDetector(
+                  onTapUp: (widget.isFlipped && !isLandscape)
+                      ? _increment
+                      : _decrement,
+                  onVerticalDragStart: _dragStart,
+                  onVerticalDragUpdate: _dragUpdate,
+                  onVerticalDragEnd: _dragEnd,
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
