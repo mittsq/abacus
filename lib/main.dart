@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'widgets/holder.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   Settings.prefs = await SharedPreferences.getInstance();
   runApp(const MyApp());
 }

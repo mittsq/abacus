@@ -16,11 +16,13 @@ class Holder extends StatefulWidget {
   State<StatefulWidget> createState() => _HolderState();
 }
 
-class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
+class _HolderState extends State<Holder> with TickerProviderStateMixin {
   bool _showMenu = false;
   bool _showNeedle = false;
   var duration = const Duration(milliseconds: 200);
   late AnimationController _menuController;
+  late AnimationController _needleController;
+  late Animation<double> _needleAnimation;
 
   late CountWrapper player1, player2;
   int get _starting => Settings.prefs!.getInt('starting') ?? 20;
@@ -32,6 +34,11 @@ class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
       vsync: this,
       duration: duration,
     );
+    _needleController = AnimationController(
+      vsync: this,
+    );
+    _needleAnimation = _needleController.drive(Tween(begin: 0, end: 1));
+
     Wakelock.enable();
     _showOverlays(false);
 
@@ -69,9 +76,39 @@ class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
 
     var auto = Settings.prefs!.getBool('autoDecide') ?? false;
     if (!auto) return;
+    var isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
+    var o = isLandscape ? 0.0 : 0.25;
+    var r = math.Random().nextDouble();
+    _needleController.duration = Duration(
+      seconds: 2,
+      milliseconds: (1000 / 3 * r).round(),
+    );
+    _needleAnimation = _needleController.drive(MyTween(
+      m: 0.5,
+      iterations: 6,
+      result: r,
+      offset: o,
+    ));
+
+    int winner;
+    r += o;
+    if (r > 1) r -= 1;
+    if (isLandscape) {
+      winner = r < 0.5 ? 1 : 2;
+    } else {
+      winner = r < 0.25 || r > 0.75 ? 1 : 2;
+    }
+    // print('spinning to ${r.toStringAsPrecision(3)} with winner $winner');
+
+    _needleController.reset();
     await Future.delayed(duration * 2);
-    setState(() {
-      _showNeedle = true;
+    setState(() => _showNeedle = true);
+    await Future.delayed(duration * 2);
+    _needleController.forward().whenComplete(() async {
+      await Future.delayed(duration * 2);
+      setState(() => _showNeedle = false);
     });
   }
 
@@ -203,8 +240,14 @@ class _HolderState extends State<Holder> with SingleTickerProviderStateMixin {
           child: AnimatedOpacity(
             opacity: _showNeedle ? 1 : 0,
             duration: duration,
-            child: const Center(
-              child: NeedleWidget(),
+            child: RotationTransition(
+              turns: _needleAnimation,
+              child: Center(
+                child: NeedleWidget(
+                  color: Theme.of(context).textTheme.displayLarge?.color ??
+                      Colors.white,
+                ),
+              ),
             ),
           ),
         ),

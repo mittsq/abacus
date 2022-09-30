@@ -2,48 +2,31 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
 class NeedleWidget extends StatefulWidget {
-  const NeedleWidget({super.key});
+  const NeedleWidget({super.key, this.color = Colors.white});
+
+  final Color color;
 
   @override
   State<StatefulWidget> createState() => _NeedleState();
-
-  void start() {}
 }
 
-class _NeedleState extends State<NeedleWidget>
-    with SingleTickerProviderStateMixin {
-  late Animation<double> _animation;
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _controller = AnimationController(vsync: this);
-    var tween = Tween<double>(begin: -math.pi, end: math.pi);
-    _animation = tween.animate(_controller)
-      ..addListener(() {
-        setState(() {});
-      });
-  }
-
+class _NeedleState extends State<NeedleWidget> {
   @override
   Widget build(BuildContext context) {
     return SizedBox.expand(
       child: CustomPaint(
-        painter: _NeedlePainter(),
+        painter: _NeedlePainter(widget.color),
       ),
     );
   }
 }
 
 class _NeedlePainter extends CustomPainter {
-  double _angle = 0.0, _velocity = 0.0, _acceleration = 0.0;
-  bool get isSpinning => _velocity > 0;
+  // double _angle = 0.0, _velocity = 0.0, _acceleration = 0.0;
+  // bool get isSpinning => _velocity > 0;
 
-  void start() {
-    _velocity = 1;
-  }
+  final Paint _paint;
+  _NeedlePainter(Color color) : _paint = Paint()..color = color;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -65,14 +48,42 @@ class _NeedlePainter extends CustomPainter {
         true,
       );
 
-    canvas.save();
-    canvas.translate(dx, dy);
-    canvas.rotate(_angle);
-    canvas.translate(-dx, -dy);
-    canvas.drawPath(path, Paint()..color = Colors.white);
-    canvas.restore();
+    // canvas.save();
+    // canvas.translate(dx, dy);
+    // canvas.rotate(_angle);
+    // canvas.translate(-dx, -dy);
+    canvas.drawPath(path, _paint);
+    // canvas.restore();
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class MyTween extends Tween<double> {
+  final int iterations;
+  final double result;
+  final double m;
+  final double offset;
+
+  MyTween({
+    this.iterations = 0,
+    this.result = 0,
+    required this.m,
+    this.offset = 0,
+  }) : super(end: result + iterations + offset, begin: offset) {
+    assert(iterations >= 0);
+    assert(result >= 0 && result <= 1);
+    assert(m > 0 && m < 1);
+  }
+
+  @override
+  double lerp(double t) {
+    var v = (3 * t) / (2 * m + 1);
+    if (t > m) {
+      v = (t * t * t - 3 * t * t + 3 * t + 2 * m * m * m - 3 * m * m) /
+          (2 * math.pow(m, 3) - 3 * math.pow(m, 2) + 1);
+    }
+    return v * (iterations + result) + offset;
+  }
 }
