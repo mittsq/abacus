@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:abacus/model/count_wrapper.dart';
+import 'package:abacus/util.dart';
 import 'package:abacus/widgets/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -80,27 +81,30 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
         MediaQuery.of(context).orientation == Orientation.landscape;
 
     var o = isLandscape ? 0.0 : 0.25;
-    var r = math.Random().nextDouble();
+    var rand = math.Random();
+    o += rand.nextBool() ? 0.0 : 0.5;
+    var r = rand.nextBool() ? 0.25 : 0.75 + rand.nextDouble() * 0.25 - 0.125;
     _needleController.duration = Duration(
       seconds: 2,
       milliseconds: (1000 / 3 * r).round(),
     );
-    _needleAnimation = _needleController.drive(MyTween(
-      m: 0.5,
-      iterations: 6,
-      result: r,
-      offset: o,
-    ));
+    _needleAnimation = _needleController.drive(
+      MyTween(
+        m: 0.15,
+        result: r + 6,
+        offset: o,
+      ),
+    );
 
     int winner;
     r += o;
-    if (r > 1) r -= 1;
+    if (r >= 1) r -= 1;
     if (isLandscape) {
       winner = r < 0.5 ? 1 : 2;
     } else {
       winner = r < 0.25 || r > 0.75 ? 1 : 2;
     }
-    // print('spinning to ${r.toStringAsPrecision(3)} with winner $winner');
+    print('spinning to ${r.toStringAsPrecision(3)} with winner $winner');
 
     _needleController.reset();
     await Future.delayed(duration * 2);
@@ -166,6 +170,7 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
               color: Colors.black,
               child: InkWell(
                 onTap: _openMenu,
+                onLongPress: _reset,
                 child: Padding(
                   padding: const EdgeInsets.all(10),
                   child: AnimatedIcon(
