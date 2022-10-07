@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:abacus/model/count_wrapper.dart';
+import 'package:abacus/widgets/settings.dart';
 import 'package:flutter/material.dart';
 
 class Counter extends StatefulWidget {
@@ -22,7 +23,7 @@ class _CounterState extends State<Counter> {
   int? _oldCount;
   DateTime _lastUpdate = DateTime.fromMicrosecondsSinceEpoch(0);
 
-  static const _resistance = 35;
+  int get _resistance => Settings.prefs!.getInt('swipeSens') ?? 35;
 
   void _increment(TapUpDetails args) {
     setState(() {
@@ -66,7 +67,7 @@ class _CounterState extends State<Counter> {
       widget.counter.value = count;
       _lastUpdate = DateTime.now();
     });
-    const delay = Duration(seconds: 3);
+    var delay = const Duration(seconds: 3);
     Timer(
       delay,
       () {

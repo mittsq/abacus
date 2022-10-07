@@ -27,6 +27,7 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
 
   late CountWrapper player1, player2;
   int get _starting => Settings.prefs!.getInt('starting') ?? 20;
+  bool get _holdToReset => Settings.prefs!.getBool('holdToReset') ?? true;
 
   @override
   void initState() {
@@ -170,7 +171,7 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
               color: Colors.black,
               child: InkWell(
                 onTap: _openMenu,
-                onLongPress: _reset,
+                onLongPress: _holdToReset ? _reset : null,
                 child: Padding(
                   padding: const EdgeInsets.all(10),
                   child: AnimatedIcon(

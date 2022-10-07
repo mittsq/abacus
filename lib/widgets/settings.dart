@@ -16,6 +16,7 @@ class _SettingsState extends State<Settings> {
   final _settingsKey = GlobalKey<FormState>();
   late int _starting;
   late bool _autoDecide;
+  late bool _holdToReset;
 
   @override
   void initState() {
@@ -27,6 +28,7 @@ class _SettingsState extends State<Settings> {
     _prefs = Settings.prefs!;
     _starting = _get('starting', 20);
     _autoDecide = _get('autoDecide', false);
+    _holdToReset = _get('holdToReset', true);
   }
 
   @override
@@ -67,6 +69,8 @@ class _SettingsState extends State<Settings> {
     print('Loaded $key: ${value.toString()}');
     return value;
   }
+
+  int get _swipeSens => _get('swipeSens', 35);
 
   void _editStartingLife(BuildContext context) async {
     int? result;
@@ -139,6 +143,12 @@ class _SettingsState extends State<Settings> {
     });
   }
 
+  void _changeSens(int? sens) {
+    setState(() {
+      _set('swipeSens', sens ?? 35);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -162,12 +172,46 @@ class _SettingsState extends State<Settings> {
           SwitchListTile(
             title: const Text('Decide Starting Player on Reset'),
             value: _autoDecide,
-            onChanged: ((value) {
+            onChanged: (value) {
               setState(() {
                 _set('autoDecide', _autoDecide = value);
               });
-            }),
-          )
+            },
+          ),
+          SwitchListTile(
+            title: const Text('Hold the Menu Icon to Reset'),
+            value: _holdToReset,
+            onChanged: (value) {
+              setState(() {
+                _set('holdToReset', _holdToReset = value);
+              });
+            },
+          ),
+          ListTile(
+            title: const Text('Swipe Sensitivity'),
+            trailing: SizedBox(
+              width: 100,
+              child: DropdownButton(
+                onChanged: _changeSens,
+                value: _swipeSens,
+                alignment: AlignmentDirectional.centerStart,
+                items: const [
+                  DropdownMenuItem(
+                    value: 50,
+                    child: Text('Low'),
+                  ),
+                  DropdownMenuItem(
+                    value: 35,
+                    child: Text('Medium'),
+                  ),
+                  DropdownMenuItem(
+                    value: 25,
+                    child: Text('High'),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
