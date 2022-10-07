@@ -84,7 +84,8 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
     var o = isLandscape ? 0.0 : 0.25;
     var rand = math.Random();
     o += rand.nextBool() ? 0.0 : 0.5;
-    var r = rand.nextBool() ? 0.25 : 0.75 + rand.nextDouble() * 0.25 - 0.125;
+    var r =
+        (rand.nextBool() ? 0.25 : 0.75) + (rand.nextDouble() * 0.25 - 0.125);
     _needleController.duration = Duration(
       seconds: 2,
       milliseconds: (1000 / 3 * r).round(),
@@ -105,7 +106,7 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
     } else {
       winner = r < 0.25 || r > 0.75 ? 1 : 2;
     }
-    print('spinning to ${r.toStringAsPrecision(3)} with winner $winner');
+    print('Spinning to ${r.toStringAsPrecision(3)} with winner $winner');
 
     _needleController.reset();
     await Future.delayed(duration * 2);
@@ -123,7 +124,7 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
       MaterialPageRoute(
         builder: (context) => const Settings(),
       ),
-    );
+    ).whenComplete(() => setState(() {}));
     _openMenu(visible: false);
   }
 
