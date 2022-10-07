@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+import 'dart:math' as math;
 
 import 'package:abacus/model/count_wrapper.dart';
 import 'package:abacus/widgets/settings.dart';
@@ -129,14 +130,36 @@ class _CounterState extends State<Counter> {
       miniText = '\u2212${diff.abs()}';
     }
 
+    var duration = const Duration(milliseconds: 200);
+    var color = const Color(0xFF0A0A0A);
+    var max = Settings.prefs!.getInt('starting') ?? 20;
+    var doColor = Settings.prefs!.getBool('color') ?? false;
+    var border = color;
+    if (doColor && !_commit) {
+      border = Color.lerp(
+        color,
+        diff < 0 ? color.withRed(200) : color.withGreen(200),
+        math.min(1, diff.abs() / max * 2),
+      )!;
+    }
+
     return Padding(
       padding: padding,
       child: Stack(
         children: [
-          Container(
+          AnimatedContainer(
+            duration: _commit ? duration : duration ~/ 2,
             decoration: BoxDecoration(
-              color: Colors.grey.withAlpha(32),
               borderRadius: const BorderRadius.all(Radius.circular(10)),
+              boxShadow: [
+                BoxShadow(color: border),
+                BoxShadow(
+                  color: color,
+                  spreadRadius: -5,
+                  blurRadius: 50,
+                  // offset: const Offset(10, 10),
+                )
+              ],
             ),
             child: Center(
               child: RotatedBox(
@@ -162,7 +185,7 @@ class _CounterState extends State<Counter> {
                           padding: const EdgeInsets.only(left: 10),
                           child: AnimatedOpacity(
                             opacity: _commit ? 0 : 1,
-                            duration: const Duration(milliseconds: 200),
+                            duration: duration,
                             child: Text(
                               miniText,
                               style: miniStyle,

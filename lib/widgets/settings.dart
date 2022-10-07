@@ -17,6 +17,7 @@ class _SettingsState extends State<Settings> {
   late int _starting;
   late bool _autoDecide;
   late bool _holdToReset;
+  late bool _color;
 
   @override
   void initState() {
@@ -29,6 +30,7 @@ class _SettingsState extends State<Settings> {
     _starting = _get('starting', 20);
     _autoDecide = _get('autoDecide', false);
     _holdToReset = _get('holdToReset', true);
+    _color = _get('color', false);
   }
 
   @override
@@ -212,10 +214,17 @@ class _SettingsState extends State<Settings> {
               ),
             ),
           ),
+          SwitchListTile(
+            title: const Text('Color Effects on Life Change'),
+            value: _color,
+            onChanged: (value) {
+              setState(() {
+                _set('color', _color = value);
+              });
+            },
+          ),
         ],
       ),
     );
   }
 }
-
-// 
