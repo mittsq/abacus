@@ -8,18 +8,18 @@ jobs:
    name: Build Flutter (Android)
    runs-on: ubuntu-latest
    steps:
-     - uses: actions/checkout@latest
-     - uses: actions/setup-java@latest
+     - uses: actions/checkout@v3.1.0
+     - uses: actions/setup-java@v3.5.1
        with:
          java-version: "12.x"
-     - uses: subosito/flutter-action@latest
+     - uses: subosito/flutter-action@v2.7.1
        with:
          channel: "stable"
      - name: Get dependencies
        run: flutter pub get
      - name: Build APK
        run: flutter build apk
-     - uses: marvinpinto/action-automatic-releases@latest
+     - uses: marvinpinto/action-automatic-releases@v1.2.1
        with:
          repo_token: "${{ secrets.GITHUB_TOKEN }}"
          automatic_release_tag: "latest"
@@ -27,7 +27,7 @@ jobs:
          title: "Development Build"
          files: |
            build/app/outputs/apk/release/app-release.apk
-     - uses: actions/upload-artifact@v3.1.0     
+     - uses: actions/upload-artifact@v3.1.0
        with:
          name: release-apk        
          path: build/app/outputs/apk/release/app-release.apk
