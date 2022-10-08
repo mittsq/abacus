@@ -131,15 +131,18 @@ class _CounterState extends State<Counter> {
     }
 
     var duration = const Duration(milliseconds: 200);
-    var color = const Color(0xFF0A0A0A);
+    var color = const Color(0xFF141414);
     var max = Settings.prefs!.getInt('starting') ?? 20;
     var doColor = Settings.prefs!.getBool('color') ?? false;
     var border = color;
+    var ratio =
+        Curves.easeOutExpo.transform((diff.abs() / max * 2).clamp(0, 1));
+    var radius = _commit ? 0.0 : 50.0 * ratio;
     if (doColor && !_commit) {
       border = Color.lerp(
         color,
         diff < 0 ? color.withRed(200) : color.withGreen(200),
-        math.min(1, diff.abs() / max * 2),
+        ratio,
       )!;
     }
 
@@ -147,54 +150,55 @@ class _CounterState extends State<Counter> {
       padding: padding,
       child: Stack(
         children: [
-          AnimatedContainer(
-            duration: _commit ? duration : duration ~/ 2,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-              boxShadow: [
-                BoxShadow(color: border),
-                BoxShadow(
-                  color: color,
-                  spreadRadius: -5,
-                  blurRadius: 50,
-                  // offset: const Offset(10, 10),
-                )
-              ],
-            ),
-            child: Center(
-              child: RotatedBox(
-                quarterTurns: (widget.isFlipped && !isLandscape) ? 2 : 0,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(),
-                    ),
-                    SizedBox(
-                      width: 175,
-                      child: Center(
-                        child: Text(
-                          '${widget.counter.value}',
-                          style: countStyle,
+          ClipRRect(
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            child: AnimatedContainer(
+              duration: _commit ? duration : duration ~/ 3,
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(color: border),
+                  BoxShadow(
+                    color: color,
+                    spreadRadius: 0,
+                    blurRadius: radius,
+                  )
+                ],
+              ),
+              child: Center(
+                child: RotatedBox(
+                  quarterTurns: (widget.isFlipped && !isLandscape) ? 2 : 0,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(),
+                      ),
+                      SizedBox(
+                        width: 175,
+                        child: Center(
+                          child: Text(
+                            '${widget.counter.value}',
+                            style: countStyle,
+                          ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 10),
-                          child: AnimatedOpacity(
-                            opacity: _commit ? 0 : 1,
-                            duration: duration,
-                            child: Text(
-                              miniText,
-                              style: miniStyle,
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: AnimatedOpacity(
+                              opacity: _commit ? 0 : 1,
+                              duration: duration,
+                              child: Text(
+                                miniText,
+                                style: miniStyle,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
