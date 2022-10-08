@@ -1,0 +1,33 @@
+name: Flutter CI
+on:
+  push:
+    branches:
+    - master
+jobs:
+ build_apk:
+   name: Build Flutter (Android)
+   runs-on: ubuntu-latest
+   steps:
+     - uses: actions/checkout@latest
+     - uses: actions/setup-java@latest
+       with:
+         java-version: "12.x"
+     - uses: subosito/flutter-action@latest
+       with:
+         channel: "stable"
+     - name: Get dependencies
+       run: flutter pub get
+     - name: Build APK
+       run: flutter build apk
+     - uses: marvinpinto/action-automatic-releases@latest
+       with:
+         repo_token: "${{ secrets.GITHUB_TOKEN }}"
+         automatic_release_tag: "latest"
+         prerelease: true
+         title: "Development Build"
+         files: |
+           build/app/outputs/apk/release/app-release.apk
+     - uses: actions/upload-artifact@v3.1.0     
+       with:
+         name: release-apk        
+         path: build/app/outputs/apk/release/app-release.apk
