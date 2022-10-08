@@ -135,8 +135,9 @@ class _CounterState extends State<Counter> {
     var max = Settings.prefs!.getInt('starting') ?? 20;
     var doColor = Settings.prefs!.getBool('color') ?? false;
     var border = color;
-    var ratio =
-        Curves.easeOutExpo.transform((diff.abs() / max * 2).clamp(0, 1));
+    var ratio = Curves.easeOutExpo.transform(
+      (diff.abs() / max * 2).clamp(0, 1),
+    );
     var radius = _commit ? 0.0 : 50.0 * ratio;
     if (doColor && !_commit) {
       border = Color.lerp(
@@ -153,7 +154,7 @@ class _CounterState extends State<Counter> {
           ClipRRect(
             borderRadius: const BorderRadius.all(Radius.circular(10)),
             child: AnimatedContainer(
-              duration: _commit ? duration : duration ~/ 3,
+              duration: _commit ? duration : duration ~/ 2,
               decoration: BoxDecoration(
                 boxShadow: [
                   BoxShadow(color: border),
