@@ -26,15 +26,9 @@ class _CounterState extends State<Counter> {
 
   int get _resistance => Settings.prefs!.getInt('swipeSens') ?? 35;
 
-  void _increment(TapUpDetails args) {
+  void _increment({bool invert = false}) {
     setState(() {
-      _setCount(widget.counter + 1);
-    });
-  }
-
-  void _decrement(TapUpDetails args) {
-    setState(() {
-      _setCount(widget.counter - 1);
+      _setCount(widget.counter + (invert ? -1 : 1));
     });
   }
 
@@ -207,26 +201,29 @@ class _CounterState extends State<Counter> {
           Column(
             children: [
               Expanded(
-                child: GestureDetector(
-                  onTapUp: (widget.isFlipped && !isLandscape)
-                      ? _decrement
-                      : _increment,
-                  onVerticalDragStart: _dragStart,
-                  onVerticalDragUpdate: _dragUpdate,
-                  onVerticalDragEnd: _dragEnd,
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: InkWell(
+                    onTap: () =>
+                        _increment(invert: widget.isFlipped && !isLandscape),
+                  ),
                 ),
               ),
               Expanded(
-                child: GestureDetector(
-                  onTapUp: (widget.isFlipped && !isLandscape)
-                      ? _increment
-                      : _decrement,
-                  onVerticalDragStart: _dragStart,
-                  onVerticalDragUpdate: _dragUpdate,
-                  onVerticalDragEnd: _dragEnd,
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: InkWell(
+                    onTap: () =>
+                        _increment(invert: !(widget.isFlipped && !isLandscape)),
+                  ),
                 ),
               ),
             ],
+          ),
+          GestureDetector(
+            onVerticalDragStart: _dragStart,
+            onVerticalDragUpdate: _dragUpdate,
+            onVerticalDragEnd: _dragEnd,
           ),
         ],
       ),
