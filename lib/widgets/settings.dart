@@ -9,10 +9,40 @@ class Settings extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => _SettingsState();
+
+  static bool set<T>(String key, T value) {
+    if (T == int) {
+      prefs!.setInt(key, value as int);
+    } else if (T == double) {
+      prefs!.setDouble(key, value as double);
+    } else if (T == bool) {
+      prefs!.setBool(key, value as bool);
+    } else {
+      prefs!.setString(key, value.toString());
+    }
+    print('Saved $key: ${value.toString()}');
+    return true;
+  }
+
+  static T get<T>(String key, T defaultValue) {
+    T value = defaultValue;
+    if (prefs!.containsKey(key)) {
+      if (T == int) {
+        value = prefs!.getInt(key) as T;
+      } else if (T == double) {
+        value = prefs!.getDouble(key) as T;
+      } else if (T == bool) {
+        value = prefs!.getBool(key) as T;
+      } else {
+        value = prefs!.getString(key) as T;
+      }
+    }
+    print('Loaded $key: ${value.toString()}');
+    return value;
+  }
 }
 
 class _SettingsState extends State<Settings> {
-  late final SharedPreferences _prefs;
   final _settingsKey = GlobalKey<FormState>();
   late int _starting;
   late bool _autoDecide;
@@ -26,11 +56,10 @@ class _SettingsState extends State<Settings> {
       SystemUiMode.manual,
       overlays: SystemUiOverlay.values,
     );
-    _prefs = Settings.prefs!;
-    _starting = _get('starting', 20);
-    _autoDecide = _get('autoDecide', false);
-    _holdToReset = _get('holdToReset', true);
-    _color = _get('color', false);
+    _starting = Settings.get('starting', 20);
+    _autoDecide = Settings.get('autoDecide', false);
+    _holdToReset = Settings.get('holdToReset', true);
+    _color = Settings.get('color', false);
   }
 
   @override
@@ -41,38 +70,7 @@ class _SettingsState extends State<Settings> {
     );
   }
 
-  bool _set<T>(String key, T value) {
-    if (T == int) {
-      _prefs.setInt(key, value as int);
-    } else if (T == double) {
-      _prefs.setDouble(key, value as double);
-    } else if (T == bool) {
-      _prefs.setBool(key, value as bool);
-    } else {
-      _prefs.setString(key, value.toString());
-    }
-    print('Saved $key: ${value.toString()}');
-    return true;
-  }
-
-  T _get<T>(String key, T defaultValue) {
-    T value = defaultValue;
-    if (_prefs.containsKey(key)) {
-      if (T == int) {
-        value = _prefs.getInt(key) as T;
-      } else if (T == double) {
-        value = _prefs.getDouble(key) as T;
-      } else if (T == bool) {
-        value = _prefs.getBool(key) as T;
-      } else {
-        value = _prefs.getString(key) as T;
-      }
-    }
-    print('Loaded $key: ${value.toString()}');
-    return value;
-  }
-
-  int get _swipeSens => _get('swipeSens', 35);
+  int get _swipeSens => Settings.get('swipeSens', 35);
 
   void _editStartingLife(BuildContext context) async {
     int? result;
@@ -140,14 +138,14 @@ class _SettingsState extends State<Settings> {
     );
     setState(() {
       if (result != null) {
-        _set('starting', _starting = result!);
+        Settings.set('starting', _starting = result!);
       }
     });
   }
 
   void _changeSens(int? sens) {
     setState(() {
-      _set('swipeSens', sens ?? 35);
+      Settings.set('swipeSens', sens ?? 35);
     });
   }
 
@@ -176,7 +174,7 @@ class _SettingsState extends State<Settings> {
             value: _autoDecide,
             onChanged: (value) {
               setState(() {
-                _set('autoDecide', _autoDecide = value);
+                Settings.set('autoDecide', _autoDecide = value);
               });
             },
           ),
@@ -185,7 +183,7 @@ class _SettingsState extends State<Settings> {
             value: _holdToReset,
             onChanged: (value) {
               setState(() {
-                _set('holdToReset', _holdToReset = value);
+                Settings.set('holdToReset', _holdToReset = value);
               });
             },
           ),
@@ -219,7 +217,7 @@ class _SettingsState extends State<Settings> {
             value: _color,
             onChanged: (value) {
               setState(() {
-                _set('color', _color = value);
+                Settings.set('color', _color = value);
               });
             },
           ),

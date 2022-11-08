@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:abacus/model/count_wrapper.dart';
-import 'package:abacus/util.dart';
 import 'package:abacus/widgets/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,8 +25,8 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
   late Animation<double> _needleAnimation;
 
   late CountWrapper player1, player2;
-  int get _starting => Settings.prefs!.getInt('starting') ?? 20;
-  bool get _holdToReset => Settings.prefs!.getBool('holdToReset') ?? true;
+  int get _starting => Settings.get('starting', 20);
+  bool get _holdToReset => Settings.get('holdToReset', true);
 
   @override
   void initState() {
@@ -76,7 +75,7 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
     });
     _openMenu(visible: false);
 
-    var auto = Settings.prefs!.getBool('autoDecide') ?? false;
+    var auto = Settings.get('autoDecide', false);
     if (!auto) return;
     var isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;

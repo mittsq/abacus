@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:ui';
-import 'dart:math' as math;
 
 import 'package:abacus/model/count_wrapper.dart';
 import 'package:abacus/widgets/settings.dart';
@@ -24,7 +23,7 @@ class _CounterState extends State<Counter> {
   int? _oldCount;
   DateTime _lastUpdate = DateTime.fromMicrosecondsSinceEpoch(0);
 
-  int get _resistance => Settings.prefs!.getInt('swipeSens') ?? 35;
+  int get _resistance => Settings.get('swipeSens', 35);
 
   void _increment({bool invert = false}) {
     setState(() {
@@ -126,8 +125,8 @@ class _CounterState extends State<Counter> {
 
     var duration = const Duration(milliseconds: 200);
     var color = const Color(0xFF141414);
-    var max = Settings.prefs!.getInt('starting') ?? 20;
-    var doColor = Settings.prefs!.getBool('color') ?? false;
+    var max = Settings.get('starting', 20);
+    var doColor = Settings.get('color', false);
     var border = color;
     var ratio = Curves.easeOutExpo.transform(
       (diff.abs() / max * 2).clamp(0, 1),
@@ -204,7 +203,7 @@ class _CounterState extends State<Counter> {
                 child: Material(
                   type: MaterialType.transparency,
                   child: InkWell(
-                    onTap: () =>
+                    onTapDown: (details) =>
                         _increment(invert: widget.isFlipped && !isLandscape),
                   ),
                 ),
@@ -213,7 +212,7 @@ class _CounterState extends State<Counter> {
                 child: Material(
                   type: MaterialType.transparency,
                   child: InkWell(
-                    onTap: () =>
+                    onTapDown: (details) =>
                         _increment(invert: !(widget.isFlipped && !isLandscape)),
                   ),
                 ),
