@@ -45,12 +45,7 @@ class _NeedlePainter extends CustomPainter {
         true,
       );
 
-    // canvas.save();
-    // canvas.translate(dx, dy);
-    // canvas.rotate(_angle);
-    // canvas.translate(-dx, -dy);
     canvas.drawPath(path, _paint);
-    // canvas.restore();
   }
 
   @override

@@ -97,7 +97,7 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
       ),
     );
 
-    int winner;
+    int winner = -1;
     r += o;
     if (r >= 1) r -= 1;
     if (isLandscape) {
@@ -112,8 +112,23 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
     setState(() => _showNeedle = true);
     await Future.delayed(duration * 2);
     _needleController.forward().whenComplete(() async {
-      await Future.delayed(duration * 2);
-      setState(() => _showNeedle = false);
+      setState(() {
+        player1.glow = winner == 1;
+        player2.glow = winner == 2;
+      });
+
+      Future.delayed(duration * 2, () {
+        setState(() {
+          _showNeedle = false;
+        });
+      });
+
+      Future.delayed(const Duration(seconds: 3), () {
+        setState(() {
+          player1.glow = false;
+          player2.glow = false;
+        });
+      });
     });
   }
 

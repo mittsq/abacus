@@ -56,6 +56,7 @@ class _CounterState extends State<Counter> {
 
   void _setCount(int count) {
     setState(() {
+      widget.counter.glow = false;
       if (_commit) _commitCount = widget.counter.value;
       _commit = false;
       widget.counter.value = count;
@@ -76,11 +77,11 @@ class _CounterState extends State<Counter> {
 
   @override
   Widget build(BuildContext context) {
+    var tabular = const [FontFeature.tabularFigures()];
+
     var countStyle = Theme.of(context).textTheme.displayLarge?.merge(
-          const TextStyle(
-            fontFeatures: [
-              FontFeature.tabularFigures(),
-            ],
+          TextStyle(
+            fontFeatures: tabular,
             fontWeight: FontWeight.normal,
           ),
         );
@@ -88,9 +89,7 @@ class _CounterState extends State<Counter> {
     var miniStyle = Theme.of(context).textTheme.headlineSmall?.merge(
           TextStyle(
             color: countStyle?.color,
-            fontFeatures: const [
-              FontFeature.tabularFigures(),
-            ],
+            fontFeatures: tabular,
           ),
         );
 
@@ -138,6 +137,11 @@ class _CounterState extends State<Counter> {
         diff < 0 ? color.withRed(200) : color.withGreen(200),
         ratio,
       )!;
+    }
+
+    if (widget.counter.glow) {
+      radius = 50.0;
+      border = const Color.fromARGB(255, 200, 200, 200);
     }
 
     return Padding(

@@ -4,6 +4,7 @@ class CountWrapper {
   }
 
   late int _count;
+  late bool _glow;
 
   int operator +(int other) {
     return _count + other;
@@ -18,5 +19,9 @@ class CountWrapper {
 
   void reset(int start) {
     _count = start;
+    _glow = false;
   }
+
+  bool get glow => _glow;
+  set glow(v) => _glow = v;
 }
