@@ -19,7 +19,7 @@ jobs:
      - name: Get dependencies
        run: flutter pub get
      - name: Build APK
-       run: flutter build apk
+       run: flutter build apk --release
      - uses: marvinpinto/action-automatic-releases@v1.2.1
        with:
          repo_token: "${{ secrets.GITHUB_TOKEN }}"
