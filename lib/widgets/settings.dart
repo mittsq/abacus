@@ -6,6 +6,7 @@ class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
 
   static SharedPreferences? prefs;
+  static final Map<String, dynamic> _cache = {};
 
   @override
   State<StatefulWidget> createState() => _SettingsState();
@@ -20,12 +21,18 @@ class Settings extends StatefulWidget {
     } else {
       prefs!.setString(key, value.toString());
     }
+
+    _cache[key] = value;
     print('Saved $key: ${value.toString()}');
     return true;
   }
 
   static T get<T>(String key, T defaultValue) {
     T value = defaultValue;
+    if (_cache.containsKey(key)) {
+      return _cache[key] as T;
+    }
+
     if (prefs!.containsKey(key)) {
       if (T == int) {
         value = prefs!.getInt(key) as T;
@@ -36,8 +43,9 @@ class Settings extends StatefulWidget {
       } else {
         value = prefs!.getString(key) as T;
       }
+      _cache[key] = value;
+      print('Loaded $key: ${value.toString()}');
     }
-    print('Loaded $key: ${value.toString()}');
     return value;
   }
 }
