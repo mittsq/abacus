@@ -103,7 +103,7 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
     if (isLandscape) {
       winner = r < 0.5 ? 1 : 2;
     } else {
-      winner = r < 0.25 || r > 0.75 ? 1 : 2;
+      winner = r < 0.25 || r > 0.75 ? 2 : 1;
     }
     print('Spinning to ${r.toStringAsPrecision(3)} with winner $winner');
 
@@ -123,7 +123,7 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
         });
       });
 
-      Future.delayed(const Duration(seconds: 3), () {
+      Future.delayed(const Duration(seconds: 2), () {
         setState(() {
           player1.glow = false;
           player2.glow = false;
