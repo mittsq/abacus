@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:github/github.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
@@ -57,6 +61,9 @@ class _SettingsState extends State<Settings> {
   late bool _holdToReset;
   late bool _color;
 
+  late Timer _timer;
+  String _updateString = '';
+
   @override
   void initState() {
     super.initState();
@@ -68,6 +75,26 @@ class _SettingsState extends State<Settings> {
     _autoDecide = Settings.get('autoDecide', false);
     _holdToReset = Settings.get('holdToReset', true);
     _color = Settings.get('color', false);
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(
+      const Duration(seconds: 1),
+      (t) => {setState(() => _updateString = _lastUpdateString())},
+    );
+  }
+
+  @override
+  void activate() {
+    super.activate();
+    _startTimer();
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    _timer.cancel();
   }
 
   @override
@@ -157,6 +184,36 @@ class _SettingsState extends State<Settings> {
     });
   }
 
+  String _lastUpdateString() {
+    var lastUpdate = Settings.get('lastUpdate', 0);
+    if (lastUpdate == 0) return 'Last checked never';
+
+    var since = DateTime.now().difference(
+      DateTime.fromMillisecondsSinceEpoch(lastUpdate),
+    );
+    var s = 'Last checked ';
+    if (since.inDays > 0) {
+      s += '${since.inDays} day${since.inDays == 1 ? '' : 's'}';
+    } else if (since.inHours > 0) {
+      s += '${since.inHours} hour${since.inHours == 1 ? '' : 's'}';
+    } else if (since.inMinutes > 0) {
+      s += '${since.inMinutes} minute${since.inMinutes == 1 ? '' : 's'}';
+    } else {
+      s += '${since.inSeconds} second${since.inSeconds == 1 ? '' : 's'}';
+    }
+    return '$s ago';
+  }
+
+  Future<void> _checkForUpdates() async {
+    launchUrl(Uri.parse('https://github.com/mittsq/abacus/releases'));
+    Settings.set('lastUpdate', DateTime.now().millisecondsSinceEpoch);
+
+    // var gh = GitHub();
+    // var releases = await gh.repositories
+    //     .listReleases(RepositorySlug('mittsq', 'abacus'))
+    //     .first;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -228,6 +285,12 @@ class _SettingsState extends State<Settings> {
                 Settings.set('color', _color = value);
               });
             },
+          ),
+          const Divider(),
+          ListTile(
+            title: const Text('Check for updates'),
+            subtitle: Text(_updateString = _lastUpdateString()),
+            onTap: () => _checkForUpdates(),
           ),
         ],
       ),

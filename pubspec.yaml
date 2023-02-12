@@ -9,8 +9,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  github: ^9.7.0
   shared_preferences: ^2.0.15
   wakelock: ^0.6.2
+  url_launcher: ^6.1.9
 
 dev_dependencies:
   flutter_test:
