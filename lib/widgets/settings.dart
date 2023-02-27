@@ -206,7 +206,10 @@ class _SettingsState extends State<Settings> {
 
   Future<void> _checkForUpdates() async {
     launchUrl(Uri.parse('https://github.com/mittsq/abacus/releases'));
-    Settings.set('lastUpdate', DateTime.now().millisecondsSinceEpoch);
+
+    setState(() {
+      Settings.set('lastUpdate', DateTime.now().millisecondsSinceEpoch);
+    });
 
     // var gh = GitHub();
     // var releases = await gh.repositories
