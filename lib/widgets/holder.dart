@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:abacus/model/count_wrapper.dart';
+import 'package:abacus/util.dart';
 import 'package:abacus/widgets/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,7 +25,7 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
   late AnimationController _needleController;
   late Animation<double> _needleAnimation;
 
-  late CountWrapper player1, player2;
+  late List<CountWrapper> players;
   int get _starting => Settings.get('starting', 20);
   bool get _holdToReset => Settings.get('holdToReset', true);
 
@@ -40,11 +41,10 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
     );
     _needleAnimation = _needleController.drive(Tween(begin: 0, end: 1));
 
+    players = List.generate(4, (i) => CountWrapper(_starting));
+
     Wakelock.enable();
     _showOverlays(false);
-
-    player1 = CountWrapper(_starting);
-    player2 = CountWrapper(_starting);
   }
 
   @override
@@ -69,18 +69,18 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
 
   void _reset() async {
     setState(() {
-      player1.reset(_starting);
-      player2.reset(_starting);
+      for (var p in players) {
+        p.reset(_starting);
+      }
       _showNeedle = false;
     });
     _openMenu(visible: false);
 
     var auto = Settings.get('autoDecide', false);
     if (!auto) return;
-    var isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
+    var ls = isLandscape(context);
 
-    var o = isLandscape ? 0.0 : 0.25;
+    var o = ls ? 0.0 : 0.25;
     var rand = math.Random();
     o += rand.nextBool() ? 0.0 : 0.5;
     var r =
@@ -100,7 +100,7 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
     int winner = -1;
     r += o;
     if (r >= 1) r -= 1;
-    if (isLandscape) {
+    if (ls) {
       winner = r < 0.5 ? 1 : 2;
     } else {
       winner = r < 0.25 || r > 0.75 ? 2 : 1;
@@ -113,8 +113,9 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
     await Future.delayed(duration * 2);
     _needleController.forward().whenComplete(() async {
       setState(() {
-        player1.glow = winner == 1;
-        player2.glow = winner == 2;
+        for (var p = 0; p < 4; ++p) {
+          players[p].glow = p == winner - 1;
+        }
       });
 
       Future.delayed(duration * 2, () {
@@ -125,8 +126,7 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
 
       Future.delayed(const Duration(seconds: 2), () {
         setState(() {
-          player1.glow = false;
-          player2.glow = false;
+          for (var p in players) p.glow = false;
         });
       });
     });
@@ -147,37 +147,80 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
       show ? SystemUiMode.edgeToEdge : SystemUiMode.immersiveSticky,
       // overlays: SystemUiOverlay.values,
     );
+
+    for (var p in players) {
+      p.showExtras = show;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    var isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
+    var ls = isLandscape(context);
+
+    var leftTop = [
+      Expanded(
+        child: Counter(
+          counter: players[1],
+          isFlipped: true,
+        ),
+      ),
+      Expanded(
+        child: Counter(
+          counter: players[3],
+          isFlipped: true,
+        ),
+      ),
+    ];
+
+    var rightBottom = [
+      Expanded(
+        child: Counter(
+          counter: players[0],
+          isFlipped: false,
+        ),
+      ),
+      Expanded(
+        child: Counter(
+          counter: players[2],
+          isFlipped: false,
+        ),
+      ),
+    ];
+
+    if (ls) {
+      leftTop = leftTop.reversed.toList();
+      rightBottom = rightBottom.reversed.toList();
+    }
+
     return Stack(
       children: [
-        Flex(
-          direction: isLandscape ? Axis.horizontal : Axis.vertical,
-          children: [
-            Expanded(
-              child: Counter(
-                counter: player2,
-                isFlipped: true,
+        Padding(
+          padding: const EdgeInsets.all(5),
+          child: Flex(
+            direction: ls ? Axis.horizontal : Axis.vertical,
+            children: [
+              Expanded(
+                child: Flex(
+                  direction: ls ? Axis.vertical : Axis.horizontal,
+                  children: leftTop,
+                ),
               ),
-            ),
-            AnimatedSize(
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.easeOutExpo,
-              child: SizedBox(
-                height: _showMenu ? 100 : 0,
-                width: _showMenu ? 100 : 0,
+              AnimatedSize(
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeOutExpo,
+                child: SizedBox(
+                  height: _showMenu ? 100 : 0,
+                  width: _showMenu ? 100 : 0,
+                ),
               ),
-            ),
-            Expanded(
-              child: Counter(
-                counter: player1,
+              Expanded(
+                child: Flex(
+                  direction: ls ? Axis.vertical : Axis.horizontal,
+                  children: rightBottom,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         Center(
           child: ClipRRect(
@@ -205,7 +248,7 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
             duration: duration,
             curve: Curves.ease,
             child: Flex(
-              direction: isLandscape ? Axis.vertical : Axis.horizontal,
+              direction: ls ? Axis.vertical : Axis.horizontal,
               children: [
                 Expanded(
                   child: Center(

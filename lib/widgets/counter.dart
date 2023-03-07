@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:abacus/model/count_wrapper.dart';
+import 'package:abacus/util.dart';
 import 'package:abacus/widgets/settings.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,7 @@ class Counter extends StatefulWidget {
 }
 
 class _CounterState extends State<Counter> {
-  late int _commitCount = widget.counter.value;
+  late int _commitCount = widget.counter.count;
   bool _commit = true;
   double? _offset;
   int? _oldCount;
@@ -34,15 +35,14 @@ class _CounterState extends State<Counter> {
   void _dragStart(DragStartDetails args) {
     if (_offset != null) return;
     _offset = args.globalPosition.dy;
-    _oldCount ??= widget.counter.value;
+    _oldCount ??= widget.counter.count;
   }
 
   void _dragUpdate(DragUpdateDetails args) {
     var delta = args.globalPosition.dy - _offset!;
-    var isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-    var newCount = _oldCount! -
-        delta / _resistance * ((widget.isFlipped && !isLandscape) ? -1 : 1);
+    var ls = isLandscape(context);
+    var newCount =
+        _oldCount! - delta / _resistance * ((widget.isFlipped && !ls) ? -1 : 1);
 
     setState(() {
       _setCount(newCount.round());
@@ -57,9 +57,9 @@ class _CounterState extends State<Counter> {
   void _setCount(int count) {
     setState(() {
       widget.counter.glow = false;
-      if (_commit) _commitCount = widget.counter.value;
+      if (_commit) _commitCount = widget.counter.count;
       _commit = false;
-      widget.counter.value = count;
+      widget.counter.count = count;
       _lastUpdate = DateTime.now();
     });
     var delay = const Duration(seconds: 3);
@@ -93,24 +93,7 @@ class _CounterState extends State<Counter> {
           ),
         );
 
-    var isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-    EdgeInsetsGeometry padding;
-    if (isLandscape) {
-      padding = EdgeInsets.fromLTRB(
-        widget.isFlipped ? 10 : 5,
-        10,
-        widget.isFlipped ? 5 : 10,
-        10,
-      );
-    } else {
-      padding = EdgeInsets.fromLTRB(
-        10,
-        widget.isFlipped ? 10 : 5,
-        10,
-        widget.isFlipped ? 5 : 10,
-      );
-    }
+    var ls = isLandscape(context);
 
     String miniText;
     var diff = widget.counter - _commitCount;
@@ -145,7 +128,7 @@ class _CounterState extends State<Counter> {
     }
 
     return Padding(
-      padding: padding,
+      padding: const EdgeInsets.all(5),
       child: Stack(
         children: [
           ClipRRect(
@@ -164,7 +147,7 @@ class _CounterState extends State<Counter> {
               ),
               child: Center(
                 child: RotatedBox(
-                  quarterTurns: (widget.isFlipped && !isLandscape) ? 2 : 0,
+                  quarterTurns: (widget.isFlipped && !ls) ? 2 : 0,
                   child: Row(
                     children: [
                       Expanded(
@@ -174,7 +157,7 @@ class _CounterState extends State<Counter> {
                         width: 175,
                         child: Center(
                           child: Text(
-                            '${widget.counter.value}',
+                            '${widget.counter.count}',
                             style: countStyle,
                           ),
                         ),
@@ -208,7 +191,7 @@ class _CounterState extends State<Counter> {
                   type: MaterialType.transparency,
                   child: InkWell(
                     onTapDown: (details) =>
-                        _increment(invert: widget.isFlipped && !isLandscape),
+                        _increment(invert: widget.isFlipped && !ls),
                   ),
                 ),
               ),
@@ -217,7 +200,7 @@ class _CounterState extends State<Counter> {
                   type: MaterialType.transparency,
                   child: InkWell(
                     onTapDown: (details) =>
-                        _increment(invert: !(widget.isFlipped && !isLandscape)),
+                        _increment(invert: !(widget.isFlipped && !ls)),
                   ),
                 ),
               ),

@@ -3,25 +3,27 @@ class CountWrapper {
     reset(start);
   }
 
-  late int _count;
-  late bool _glow;
+  late int count;
+  late bool glow;
+  late bool showExtras;
+
+  late int storm;
+  late int poison;
+  late List<int> mana;
 
   int operator +(int other) {
-    return _count + other;
+    return count + other;
   }
 
   int operator -(int other) {
-    return _count - other;
+    return count - other;
   }
-
-  int get value => _count;
-  set value(v) => _count = v;
 
   void reset(int start) {
-    _count = start;
-    _glow = false;
+    count = start;
+    glow = false;
+    showExtras = false;
   }
-
-  bool get glow => _glow;
-  set glow(v) => _glow = v;
 }
+
+enum ManaColor { white, blue, black, red, green, colorless }
