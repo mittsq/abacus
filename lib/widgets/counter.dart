@@ -104,6 +104,7 @@ class _CounterState extends State<Counter> {
     } else {
       miniText = '\u2212${diff.abs()}';
     }
+    miniText += ' ';
 
     var duration = const Duration(milliseconds: 200);
     var color = const Color(0xFF141414);
@@ -148,7 +149,7 @@ class _CounterState extends State<Counter> {
               child: Center(
                 child: RotatedBox(
                   quarterTurns: (widget.isFlipped && !ls) ? 2 : 0,
-                  child: Row(
+                  child: Column(
                     children: [
                       Expanded(
                         child: Container(),
@@ -164,7 +165,7 @@ class _CounterState extends State<Counter> {
                       ),
                       Expanded(
                         child: Align(
-                          alignment: Alignment.centerLeft,
+                          alignment: Alignment.topCenter,
                           child: Padding(
                             padding: const EdgeInsets.only(left: 10),
                             child: AnimatedOpacity(

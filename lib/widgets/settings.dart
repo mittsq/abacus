@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,11 +24,11 @@ class Settings extends StatefulWidget {
     } else if (T == bool) {
       prefs!.setBool(key, value as bool);
     } else {
-      prefs!.setString(key, value.toString());
+      prefs!.setString(key, '$value');
     }
 
     _cache[key] = value;
-    print('Saved $key: ${value.toString()}');
+    print('Saved $key: $value');
     return true;
   }
 
@@ -48,7 +49,7 @@ class Settings extends StatefulWidget {
         value = prefs!.getString(key) as T;
       }
       _cache[key] = value;
-      print('Loaded $key: ${value.toString()}');
+      print('Loaded $key: $value');
     }
     return value;
   }
@@ -56,6 +57,7 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   final _settingsKey = GlobalKey<FormState>();
+  late int _players;
   late int _starting;
   late bool _autoDecide;
   late bool _holdToReset;
@@ -71,6 +73,8 @@ class _SettingsState extends State<Settings> {
       SystemUiMode.manual,
       overlays: SystemUiOverlay.values,
     );
+
+    _players = Settings.get('players', 2);
     _starting = Settings.get('starting', 20);
     _autoDecide = Settings.get('autoDecide', false);
     _holdToReset = Settings.get('holdToReset', true);
@@ -100,6 +104,7 @@ class _SettingsState extends State<Settings> {
   @override
   void dispose() {
     super.dispose();
+    _timer.cancel();
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.immersiveSticky,
     );
@@ -150,7 +155,7 @@ class _SettingsState extends State<Settings> {
                 ]),
                 Expanded(
                   child: TextFormField(
-                    initialValue: _starting.toString(),
+                    initialValue: '$_starting',
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -230,11 +235,34 @@ class _SettingsState extends State<Settings> {
       body: ListView(
         children: [
           ListTile(
+            title: const Text('Number of Players'),
+            trailing: SizedBox(
+              width: 150,
+              child: Row(children: [
+                Text('$_players'),
+                Expanded(
+                  child: Slider(
+                    value: log(_players) / log(2),
+                    min: 0,
+                    max: 2,
+                    divisions: 2,
+                    onChanged: (value) {
+                      setState(() {
+                        Settings.set(
+                            'players', _players = pow(2, value).toInt());
+                      });
+                    },
+                  ),
+                ),
+              ]),
+            ),
+          ),
+          ListTile(
             title: const Text('Starting Life Total'),
             trailing: OutlinedButton.icon(
               onPressed: () => _editStartingLife(context),
               icon: const Icon(Icons.edit),
-              label: Text(_starting.toString()),
+              label: Text('$_starting'),
             ),
           ),
           SwitchListTile(

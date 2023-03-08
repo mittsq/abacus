@@ -79,15 +79,16 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
     var auto = Settings.get('autoDecide', false);
     if (!auto) return;
     var ls = isLandscape(context);
+    var fourPlayers = Settings.get('players', 2) == 4;
 
     var o = ls ? 0.0 : 0.25;
     var rand = math.Random();
     o += rand.nextBool() ? 0.0 : 0.5;
-    var r =
-        (rand.nextBool() ? 0.25 : 0.75) + (rand.nextDouble() * 0.25 - 0.125);
+    var r = rand
+        .nextDouble(); // (rand.nextBool() ? 0.25 : 0.75) + (rand.nextDouble() * 0.25 - 0.125);
     _needleController.duration = Duration(
       seconds: 2,
-      milliseconds: (1000 / 3 * r).round(),
+      milliseconds: (r * 1000 / 3).round(),
     );
     _needleAnimation = _needleController.drive(
       MyTween(
@@ -101,9 +102,41 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
     r += o;
     if (r >= 1) r -= 1;
     if (ls) {
-      winner = r < 0.5 ? 1 : 2;
+      if (fourPlayers) {
+        if (r < 0.25) {
+          winner = 3;
+        } else if (r < 0.5) {
+          winner = 1;
+        } else if (r < 0.75) {
+          winner = 2;
+        } else {
+          winner = 4;
+        }
+      } else {
+        if (r < 0.5) {
+          winner = 1;
+        } else {
+          winner = 2;
+        }
+      }
     } else {
-      winner = r < 0.25 || r > 0.75 ? 2 : 1;
+      if (fourPlayers) {
+        if (r < 0.25) {
+          winner = 4;
+        } else if (r < 0.5) {
+          winner = 3;
+        } else if (r < 0.75) {
+          winner = 1;
+        } else {
+          winner = 2;
+        }
+      } else {
+        if (r < 0.25 || r > 0.75) {
+          winner = 2;
+        } else {
+          winner = 1;
+        }
+      }
     }
     print('Spinning to ${r.toStringAsPrecision(3)} with winner $winner');
 
@@ -126,7 +159,9 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
 
       Future.delayed(const Duration(seconds: 2), () {
         setState(() {
-          for (var p in players) p.glow = false;
+          for (var p in players) {
+            p.glow = false;
+          }
         });
       });
     });
@@ -164,12 +199,6 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
           isFlipped: true,
         ),
       ),
-      Expanded(
-        child: Counter(
-          counter: players[3],
-          isFlipped: true,
-        ),
-      ),
     ];
 
     var rightBottom = [
@@ -179,13 +208,27 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
           isFlipped: false,
         ),
       ),
-      Expanded(
-        child: Counter(
-          counter: players[2],
-          isFlipped: false,
-        ),
-      ),
     ];
+
+    if (Settings.get('players', 2) == 4) {
+      leftTop.add(
+        Expanded(
+          child: Counter(
+            counter: players[3],
+            isFlipped: true,
+          ),
+        ),
+      );
+
+      rightBottom.add(
+        Expanded(
+          child: Counter(
+            counter: players[2],
+            isFlipped: false,
+          ),
+        ),
+      );
+    }
 
     if (ls) {
       leftTop = leftTop.reversed.toList();
