@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:abacus/widgets/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,6 +24,16 @@ class MyApp extends StatelessWidget {
         color: Colors.black,
         child: const Holder(),
       ),
+      scrollBehavior: AppScrollBehavior(),
     );
   }
+}
+
+class AppScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+        PointerDeviceKind.trackpad,
+      };
 }

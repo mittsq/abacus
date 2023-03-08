@@ -5,6 +5,7 @@ import 'package:abacus/model/count_wrapper.dart';
 import 'package:abacus/util.dart';
 import 'package:abacus/widgets/settings.dart';
 import 'package:flutter/material.dart';
+import 'package:loop_page_view/loop_page_view.dart';
 
 class Counter extends StatefulWidget {
   const Counter({Key? key, required this.counter, this.isFlipped = false})
@@ -23,6 +24,8 @@ class _CounterState extends State<Counter> {
   double? _offset;
   int? _oldCount;
   DateTime _lastUpdate = DateTime.fromMicrosecondsSinceEpoch(0);
+
+  final LoopPageController _pageController = LoopPageController();
 
   int get _resistance => Settings.get('swipeSens', 35);
 
@@ -73,6 +76,12 @@ class _CounterState extends State<Counter> {
         }
       },
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _pageController.dispose();
   }
 
   @override
@@ -128,64 +137,66 @@ class _CounterState extends State<Counter> {
       border = const Color.fromARGB(255, 200, 200, 200);
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(5),
-      child: Stack(
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-            child: AnimatedContainer(
-              duration: _commit ? duration : duration ~/ 2,
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(color: border),
-                  BoxShadow(
-                    color: color,
-                    spreadRadius: 0,
-                    blurRadius: radius,
-                  )
-                ],
-              ),
-              child: Center(
-                child: RotatedBox(
-                  quarterTurns: (widget.isFlipped && !ls) ? 2 : 0,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Container(),
-                      ),
-                      SizedBox(
-                        width: 175,
-                        child: Center(
-                          child: Text(
-                            '${widget.counter.count}',
-                            style: countStyle,
-                          ),
+    var main = Stack(
+      children: [
+        ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+          child: AnimatedContainer(
+            duration: _commit ? duration : duration ~/ 2,
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(color: border),
+                BoxShadow(
+                  color: color,
+                  spreadRadius: 0,
+                  blurRadius: radius,
+                )
+              ],
+            ),
+            child: Center(
+              child: RotatedBox(
+                quarterTurns: (widget.isFlipped && !ls) ? 2 : 0,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Container(),
+                    ),
+                    SizedBox(
+                      width: 175,
+                      child: Center(
+                        child: Text(
+                          '${widget.counter.count}',
+                          style: countStyle,
                         ),
                       ),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: AnimatedOpacity(
-                              opacity: _commit ? 0 : 1,
-                              duration: duration,
-                              child: Text(
-                                miniText,
-                                style: miniStyle,
-                              ),
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: AnimatedOpacity(
+                            opacity: _commit ? 0 : 1,
+                            duration: duration,
+                            child: Text(
+                              miniText,
+                              style: miniStyle,
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
-          Column(
+        ),
+        GestureDetector(
+          onVerticalDragStart: _dragStart,
+          onVerticalDragUpdate: _dragUpdate,
+          onVerticalDragEnd: _dragEnd,
+          child: Column(
             children: [
               Expanded(
                 child: Material(
@@ -207,12 +218,28 @@ class _CounterState extends State<Counter> {
               ),
             ],
           ),
-          GestureDetector(
-            onVerticalDragStart: _dragStart,
-            onVerticalDragUpdate: _dragUpdate,
-            onVerticalDragEnd: _dragEnd,
-          ),
-        ],
+        ),
+      ],
+    );
+
+    return Padding(
+      padding: const EdgeInsets.all(5),
+      child: LoopPageView.builder(
+        controller: _pageController,
+        itemCount: 2,
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return main;
+          } else {
+            return Center(
+              child: Icon(
+                Icons.construction_rounded,
+                size: 100,
+                color: countStyle?.color,
+              ),
+            );
+          }
+        },
       ),
     );
   }
