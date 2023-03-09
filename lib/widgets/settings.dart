@@ -236,11 +236,21 @@ class _SettingsState extends State<Settings> {
         children: [
           ListTile(
             title: const Text('Number of Players'),
+            // subtitle: Text(
+            //   _players == 1 ? 'Unsupported' : '',
+            //   style: const TextStyle(color: Colors.red),
+            // ),
             trailing: SizedBox(
-              width: 150,
+              width: 200,
               child: Row(children: [
-                Text('$_players'),
                 Expanded(
+                  child: Text(
+                    '${_players == 1 ? '⚠️' : ''} $_players',
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+                SizedBox(
+                  width: 150,
                   child: Slider(
                     value: log(_players) / log(2),
                     min: 0,
@@ -249,7 +259,9 @@ class _SettingsState extends State<Settings> {
                     onChanged: (value) {
                       setState(() {
                         Settings.set(
-                            'players', _players = pow(2, value).toInt());
+                          'players',
+                          _players = pow(2, value).toInt(),
+                        );
                       });
                     },
                   ),

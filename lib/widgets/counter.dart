@@ -29,6 +29,19 @@ class _CounterState extends State<Counter> {
 
   int get _resistance => Settings.get('swipeSens', 35);
 
+  @override
+  void initState() {
+    super.initState();
+
+    widget.counter.listeners.add(() {
+      _pageController.animateToPage(
+        0,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeOutExpo,
+      );
+    });
+  }
+
   void _increment({bool invert = false}) {
     setState(() {
       _setCount(widget.counter + (invert ? -1 : 1));
@@ -113,7 +126,6 @@ class _CounterState extends State<Counter> {
     } else {
       miniText = '\u2212${diff.abs()}';
     }
-    miniText += ' ';
 
     var duration = const Duration(milliseconds: 200);
     var color = const Color(0xFF141414);
@@ -154,40 +166,34 @@ class _CounterState extends State<Counter> {
               ],
             ),
             child: Center(
-              child: RotatedBox(
-                quarterTurns: (widget.isFlipped && !ls) ? 2 : 0,
-                child: Column(
-                  children: [
-                    Expanded(
+              child: Column(
+                children: [
+                  Expanded(
                       child: Container(),
+                  ),
+                  SizedBox(
+                    width: 175,
+                    child: Center(
+                      child: Text(
+                        '${widget.counter.count}',
+                        style: countStyle,
+                      ),
                     ),
-                    SizedBox(
-                      width: 175,
-                      child: Center(
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: AnimatedOpacity(
+                        opacity: _commit ? 0 : 1,
+                        duration: duration,
                         child: Text(
-                          '${widget.counter.count}',
-                          style: countStyle,
+                          miniText,
+                          style: miniStyle,
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 10),
-                          child: AnimatedOpacity(
-                            opacity: _commit ? 0 : 1,
-                            duration: duration,
-                            child: Text(
-                              miniText,
-                              style: miniStyle,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -224,22 +230,25 @@ class _CounterState extends State<Counter> {
 
     return Padding(
       padding: const EdgeInsets.all(5),
-      child: LoopPageView.builder(
-        controller: _pageController,
-        itemCount: 2,
-        itemBuilder: (context, index) {
-          if (index == 0) {
-            return main;
-          } else {
-            return Center(
-              child: Icon(
-                Icons.construction_rounded,
-                size: 100,
-                color: countStyle?.color,
-              ),
-            );
-          }
-        },
+      child: RotatedBox(
+        quarterTurns: widget.isFlipped && !ls ? 2 : 0,
+        child: LoopPageView.builder(
+          controller: _pageController,
+          itemCount: 2,
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return main;
+            } else {
+              return Center(
+                child: Icon(
+                  Icons.construction_rounded,
+                  size: 100,
+                  color: countStyle?.color,
+                ),
+              );
+            }
+          },
+        ),
       ),
     );
   }

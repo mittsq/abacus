@@ -83,9 +83,14 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
 
     var o = ls ? 0.0 : 0.25;
     var rand = math.Random();
-    o += rand.nextBool() ? 0.0 : 0.5;
-    var r = rand
-        .nextDouble(); // (rand.nextBool() ? 0.25 : 0.75) + (rand.nextDouble() * 0.25 - 0.125);
+
+    if (fourPlayers) {
+      o += rand.nextInt(4) * 0.25;
+    } else {
+      o += rand.nextInt(2) * 0.5;
+    }
+
+    var r = rand.nextDouble(); // TODO biased end pos
     _needleController.duration = Duration(
       seconds: 2,
       milliseconds: (r * 1000 / 3).round(),
