@@ -149,10 +149,12 @@ class _CounterState extends State<Counter> {
       border = const Color.fromARGB(255, 200, 200, 200);
     }
 
+    var rounded = const BorderRadius.all(Radius.circular(10));
+
     var main = Stack(
       children: [
         ClipRRect(
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
+          borderRadius: rounded,
           child: AnimatedContainer(
             duration: _commit ? duration : duration ~/ 2,
             decoration: BoxDecoration(
@@ -234,24 +236,114 @@ class _CounterState extends State<Counter> {
       ],
     );
 
+    Widget buildBox({Color? color, required String text}) {
+      return Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: () {},
+          child: Container(
+            width: 100,
+            height: 100,
+            color: color?.withAlpha(50) ?? countStyle?.color?.withAlpha(50),
+            child: Center(
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontFamily: 'Mana',
+                  color: color ?? countStyle?.color,
+                  fontSize: 35,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    var mana = Center(
+      child: ClipRRect(
+        borderRadius: rounded,
+        child: Flex(
+          direction: ls ? Axis.horizontal : Axis.vertical,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flex(
+              direction: ls ? Axis.vertical : Axis.horizontal,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                buildBox(
+                  color: Unicodes.white.color,
+                  text: Unicodes.white.code,
+                ),
+                buildBox(
+                  color: Unicodes.blue.color,
+                  text: Unicodes.blue.code,
+                ),
+              ],
+            ),
+            Flex(
+              direction: ls ? Axis.vertical : Axis.horizontal,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                buildBox(
+                  color: Unicodes.black.color,
+                  text: Unicodes.black.code,
+                ),
+                buildBox(
+                  color: Unicodes.red.color,
+                  text: Unicodes.red.code,
+                ),
+              ],
+            ),
+            Flex(
+              direction: ls ? Axis.vertical : Axis.horizontal,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                buildBox(
+                  color: Unicodes.green.color,
+                  text: Unicodes.green.code,
+                ),
+                buildBox(
+                  color: Unicodes.colorless.color,
+                  text: Unicodes.colorless.code,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+
+    var others = Center(
+      child: ClipRRect(
+        borderRadius: rounded,
+        child: Flex(
+          direction: ls ? Axis.vertical : Axis.horizontal,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            buildBox(text: Unicodes.poison.code),
+            buildBox(text: Unicodes.storm.code),
+            buildBox(text: Unicodes.damage.code),
+          ],
+        ),
+      ),
+    );
+
     return Padding(
       padding: const EdgeInsets.all(5),
       child: RotatedBox(
         quarterTurns: widget.isFlipped && !ls ? 2 : 0,
         child: LoopPageView.builder(
           controller: _pageController,
-          itemCount: 2,
+          itemCount: 3,
           itemBuilder: (context, index) {
-            if (index == 0) {
-              return main;
-            } else {
-              return Center(
-                child: Icon(
-                  Icons.construction_rounded,
-                  size: 100,
-                  color: countStyle?.color,
-                ),
-              );
+            switch (index) {
+              case 1:
+                return mana;
+              case 2:
+                return others;
+              default:
+                return main;
             }
           },
         ),
