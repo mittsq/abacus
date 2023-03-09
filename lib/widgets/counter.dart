@@ -169,7 +169,13 @@ class _CounterState extends State<Counter> {
               child: Column(
                 children: [
                   Expanded(
-                      child: Container(),
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Icon(
+                        Icons.favorite_rounded,
+                        color: countStyle?.color,
+                      ),
+                    ),
                   ),
                   SizedBox(
                     width: 175,
