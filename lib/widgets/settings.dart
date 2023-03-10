@@ -64,6 +64,7 @@ class _SettingsState extends State<Settings> {
   late bool _autoDecide;
   late bool _holdToReset;
   late bool _color;
+  late bool _showCounters;
 
   late Timer _timer;
   String _updateString = '';
@@ -81,6 +82,7 @@ class _SettingsState extends State<Settings> {
     _autoDecide = Settings.get('autoDecide', false);
     _holdToReset = Settings.get('holdToReset', true);
     _color = Settings.get('color', false);
+    _showCounters = Settings.get('showCounters', true);
     _startTimer();
   }
 
@@ -113,77 +115,6 @@ class _SettingsState extends State<Settings> {
   }
 
   int get _swipeSens => Settings.get('swipeSens', 35);
-
-  void _editStartingLife(BuildContext context) async {
-    int? result;
-
-    void saveAndClose(String value) {
-      var state = _settingsKey.currentState!;
-      if (!state.validate()) return;
-      result = int.parse(value);
-      Navigator.pop(context);
-    }
-
-    await showModalBottomSheet(
-      context: context,
-      // isDismissible: false,
-      // enableDrag: false,
-      builder: (context) {
-        return Form(
-          key: _settingsKey,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Row(children: [
-                  OutlinedButton(
-                    onPressed: () => saveAndClose('20'),
-                    child: const Text('Set to 20'),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: OutlinedButton(
-                      onPressed: () => saveAndClose('30'),
-                      child: const Text('Set to 30'),
-                    ),
-                  ),
-                  Expanded(child: Container()),
-                  OutlinedButton(
-                    onPressed: () {
-                      _settingsKey.currentState!.save();
-                    },
-                    child: const Text('Save'),
-                  ),
-                ]),
-                Expanded(
-                  child: TextFormField(
-                    initialValue: '$_starting',
-                    keyboardType: TextInputType.number,
-                    textAlign: TextAlign.center,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    onSaved: (value) => saveAndClose(value!),
-                    onFieldSubmitted: (value) => saveAndClose(value),
-                    style: Theme.of(context).textTheme.headline1,
-                    validator: (value) {
-                      if (value == null || int.tryParse(value) == null) {
-                        return 'Invalid value';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-    setState(() {
-      if (result != null) {
-        Settings.set('starting', _starting = result!);
-      }
-    });
-  }
 
   void _changeSens(int? sens) {
     setState(() {
@@ -344,6 +275,15 @@ class _SettingsState extends State<Settings> {
             onChanged: (value) {
               setState(() {
                 Settings.set('color', _color = value);
+              });
+            },
+          ),
+          SwitchListTile(
+            title: const Text('Always Show Non-Zero Counters'),
+            value: _showCounters,
+            onChanged: (value) {
+              setState(() {
+                Settings.set('showCounters', _showCounters = value);
               });
             },
           ),
