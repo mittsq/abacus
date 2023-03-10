@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:abacus/model/count_wrapper.dart';
 import 'package:abacus/util.dart';
+import 'package:abacus/widgets/box.dart';
 import 'package:abacus/widgets/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:loop_page_view/loop_page_view.dart';
@@ -19,7 +20,7 @@ class Counter extends StatefulWidget {
 }
 
 class _CounterState extends State<Counter> {
-  late int _commitCount = widget.counter.getSelected();
+  late int _commitCount = widget.counter.get();
   bool _commit = true;
   double? _offset;
   int? _oldCount;
@@ -53,7 +54,7 @@ class _CounterState extends State<Counter> {
   void _dragStart(DragStartDetails args) {
     if (_offset != null) return;
     _offset = args.globalPosition.dy;
-    _oldCount ??= widget.counter.getSelected();
+    _oldCount ??= widget.counter.get();
   }
 
   void _dragUpdate(DragUpdateDetails args) {
@@ -75,9 +76,9 @@ class _CounterState extends State<Counter> {
   void _setCount(int count) {
     setState(() {
       widget.counter.glow = false;
-      if (_commit) _commitCount = widget.counter.getSelected();
+      if (_commit) _commitCount = widget.counter.get();
       _commit = false;
-      widget.counter.setSelected(count);
+      widget.counter.set(value: count);
       _lastUpdate = DateTime.now();
     });
     var delay = const Duration(seconds: 3);
@@ -101,19 +102,11 @@ class _CounterState extends State<Counter> {
 
   @override
   Widget build(BuildContext context) {
-    var tabular = const [FontFeature.tabularFigures()];
-
-    var countStyle = Theme.of(context).textTheme.displayLarge?.merge(
-          TextStyle(
-            fontFeatures: tabular,
-            fontWeight: FontWeight.normal,
-          ),
-        );
-
+    var countStyle = getTextStyle(context);
     var miniStyle = Theme.of(context).textTheme.headlineSmall?.merge(
           TextStyle(
             color: countStyle?.color,
-            fontFeatures: tabular,
+            fontFeatures: const [FontFeature.tabularFigures()],
           ),
         );
 
@@ -188,7 +181,7 @@ class _CounterState extends State<Counter> {
                     width: 175,
                     child: Center(
                       child: Text(
-                        '${widget.counter.getSelected()}',
+                        '${widget.counter.get()}',
                         style: countStyle,
                       ),
                     ),
@@ -241,101 +234,102 @@ class _CounterState extends State<Counter> {
       ],
     );
 
-    Widget buildBox(Unicodes onTap) {
-      var selected = widget.counter.selected == onTap;
-      var icon = Text(
-        onTap.code,
-        style: TextStyle(
-          fontFamily: 'Mana',
-          color: onTap.color ?? countStyle?.color,
-          fontSize: 35,
-        ),
-      );
-
-      var ret = Icon(
-        Icons.arrow_back_rounded,
-        color: onTap.color ?? countStyle?.color,
-        size: 35,
-      );
-
-      return Material(
-        type: MaterialType.transparency,
-        child: InkWell(
-          onTap: () {
-            setState(() {
-              _commit = true;
-              widget.counter.selected = selected ? Unicodes.life : onTap;
-              _jump();
-            });
-          },
-          child: Container(
-            width: 100,
-            height: 100,
-            color:
-                onTap.color?.withAlpha(50) ?? countStyle?.color?.withAlpha(50),
-            child: Center(
-              child: AnimatedCrossFade(
-                firstChild: icon,
-                secondChild: ret,
-                crossFadeState: selected
-                    ? CrossFadeState.showSecond
-                    : CrossFadeState.showFirst,
-                duration: duration ~/ 2,
-              ),
-            ),
+    Widget emplace(Widget child) {
+      return Padding(
+        padding: const EdgeInsets.all(10),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: ClipRRect(
+            borderRadius: rounded,
+            child: child,
           ),
         ),
       );
     }
 
-    var mana = Center(
-      child: ClipRRect(
-        borderRadius: rounded,
-        child: Flex(
-          direction: ls ? Axis.horizontal : Axis.vertical,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flex(
-              direction: ls ? Axis.vertical : Axis.horizontal,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                buildBox(Unicodes.white),
-                buildBox(Unicodes.blue),
-              ],
-            ),
-            Flex(
-              direction: ls ? Axis.vertical : Axis.horizontal,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                buildBox(Unicodes.black),
-                buildBox(Unicodes.red),
-              ],
-            ),
-            Flex(
-              direction: ls ? Axis.vertical : Axis.horizontal,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                buildBox(Unicodes.green),
-                buildBox(Unicodes.colorless),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
+    void onBoxSelect() {
+      setState(() {
+        _commit = true;
+        _jump();
+      });
+    }
 
-    var others = Center(
-      child: ClipRRect(
-        borderRadius: rounded,
-        child: Flex(
+    var mana = emplace(Flex(
+      direction: ls ? Axis.horizontal : Axis.vertical,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flex(
           direction: ls ? Axis.vertical : Axis.horizontal,
           mainAxisSize: MainAxisSize.min,
           children: [
-            buildBox(Unicodes.poison),
-            buildBox(Unicodes.storm),
-            buildBox(Unicodes.damage),
+            CounterBox(
+              parent: widget,
+              unicode: Unicodes.white,
+              onSelect: onBoxSelect,
+            ),
+            CounterBox(
+              parent: widget,
+              unicode: Unicodes.blue,
+              onSelect: onBoxSelect,
+            ),
           ],
         ),
+        Flex(
+          direction: ls ? Axis.vertical : Axis.horizontal,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CounterBox(
+              parent: widget,
+              unicode: Unicodes.black,
+              onSelect: onBoxSelect,
+            ),
+            CounterBox(
+              parent: widget,
+              unicode: Unicodes.red,
+              onSelect: onBoxSelect,
+            ),
+          ],
+        ),
+        Flex(
+          direction: ls ? Axis.vertical : Axis.horizontal,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CounterBox(
+              parent: widget,
+              unicode: Unicodes.green,
+              onSelect: onBoxSelect,
+            ),
+            CounterBox(
+              parent: widget,
+              unicode: Unicodes.colorless,
+              onSelect: onBoxSelect,
+            ),
+          ],
+        ),
+      ],
+    ));
+
+    var others = emplace(
+      Flex(
+        direction: ls ? Axis.horizontal : Axis.vertical,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CounterBox(
+            parent: widget,
+            unicode: Unicodes.poison,
+            onSelect: onBoxSelect,
+          ),
+          CounterBox(
+            parent: widget,
+            unicode: Unicodes.storm,
+            onSelect: onBoxSelect,
+          ),
+          CounterBox(
+            parent: widget,
+            unicode: Unicodes.damage,
+            onSelect: onBoxSelect,
+          ),
+        ],
       ),
     );
 

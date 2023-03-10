@@ -187,10 +187,6 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
       show ? SystemUiMode.edgeToEdge : SystemUiMode.immersiveSticky,
       // overlays: SystemUiOverlay.values,
     );
-
-    for (var p in players) {
-      p.showExtras = show;
-    }
   }
 
   @override

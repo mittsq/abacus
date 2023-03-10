@@ -1,4 +1,6 @@
-import 'package:flutter/widgets.dart';
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
 
 extension NumExtensions on double {
   double roundTo(double value) => (this / value).roundToDouble() * value;
@@ -6,6 +8,14 @@ extension NumExtensions on double {
 
 bool isLandscape(BuildContext context) =>
     MediaQuery.of(context).orientation == Orientation.landscape;
+
+TextStyle? getTextStyle(BuildContext context) =>
+    Theme.of(context).textTheme.displayLarge?.merge(
+          const TextStyle(
+            fontFeatures: [FontFeature.tabularFigures()],
+            fontWeight: FontWeight.normal,
+          ),
+        );
 
 enum Unicodes {
   white('\ue600', Color(0xfffefddf)),
