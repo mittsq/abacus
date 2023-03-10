@@ -26,8 +26,6 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
   late Animation<double> _needleAnimation;
 
   late List<CountWrapper> players;
-  int get _starting => Settings.get('starting', 20);
-  bool get _holdToReset => Settings.get('holdToReset', true);
 
   @override
   void initState() {
@@ -41,7 +39,10 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
     );
     _needleAnimation = _needleController.drive(Tween(begin: 0, end: 1));
 
-    players = List.generate(4, (i) => CountWrapper(_starting));
+    players = List.generate(
+      4,
+      (i) => CountWrapper(Settings.get<int>(SettingsKey.starting)),
+    );
 
     Wakelock.enable();
     _showOverlays(false);
@@ -70,16 +71,16 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
   void _reset() async {
     setState(() {
       for (var p in players) {
-        p.reset(_starting);
+        p.reset(Settings.get<int>(SettingsKey.starting));
       }
       _showNeedle = false;
     });
     _openMenu(visible: false);
 
-    var auto = Settings.get('autoDecide', false);
+    var auto = Settings.get<bool>(SettingsKey.autoDecide);
     if (!auto) return;
     var ls = isLandscape(context);
-    var fourPlayers = Settings.get('players', 2) == 4;
+    var fourPlayers = Settings.get<int>(SettingsKey.players) == 4;
 
     var o = ls ? 0.0 : 0.25;
     var rand = math.Random();
@@ -211,7 +212,7 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
       ),
     ];
 
-    if (Settings.get('players', 2) == 4) {
+    if (Settings.get<int>(SettingsKey.players) == 4) {
       leftTop.add(
         Expanded(
           child: Counter(
@@ -273,7 +274,8 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
               color: Colors.black,
               child: InkWell(
                 onTap: _openMenu,
-                onLongPress: _holdToReset ? _reset : null,
+                onLongPress:
+                    Settings.get<bool>(SettingsKey.holdToReset) ? _reset : null,
                 child: Padding(
                   padding: const EdgeInsets.all(10),
                   child: AnimatedIcon(

@@ -28,8 +28,6 @@ class _CounterState extends State<Counter> {
 
   final LoopPageController _pageController = LoopPageController();
 
-  int get _resistance => Settings.get('swipeSens', 35);
-
   @override
   void initState() {
     super.initState();
@@ -60,8 +58,9 @@ class _CounterState extends State<Counter> {
   void _dragUpdate(DragUpdateDetails args) {
     var delta = args.globalPosition.dy - _offset!;
     var ls = isLandscape(context);
+    var res = Settings.get<int>(SettingsKey.swipeSens);
     var newCount =
-        _oldCount! - delta / _resistance * ((widget.isFlipped && !ls) ? -1 : 1);
+        _oldCount! - delta / res * ((widget.isFlipped && !ls) ? -1 : 1);
 
     setState(() {
       _setCount(newCount.round());
@@ -124,8 +123,8 @@ class _CounterState extends State<Counter> {
 
     var duration = const Duration(milliseconds: 200);
     var color = const Color(0xFF141414);
-    var max = Settings.get('starting', 20);
-    var doColor = Settings.get('color', false);
+    var max = Settings.get<int>(SettingsKey.starting);
+    var doColor = Settings.get<bool>(SettingsKey.color);
     var border = color;
     var ratio = Curves.easeOutExpo.transform(
       (diff.abs() / max * 2).clamp(0, 1),
@@ -147,7 +146,7 @@ class _CounterState extends State<Counter> {
     var rounded = const BorderRadius.all(Radius.circular(10));
 
     var otherList = <TextSpan>[];
-    if (Settings.get('showCounters', true)) {
+    if (Settings.get<bool>(SettingsKey.showCounters)) {
       otherList.addAll(
         widget.counter.counters.entries
             .where((c) =>

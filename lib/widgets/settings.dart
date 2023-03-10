@@ -7,64 +7,80 @@ import 'package:github/github.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+enum SettingsKey {
+  players(2),
+  starting(20),
+  autoDecide(false),
+  holdToReset(true),
+  color(true),
+  showCounters(true),
+  swipeSens(35),
+  lastUpdate(0);
+
+  final dynamic defaultValue;
+
+  const SettingsKey(this.defaultValue);
+}
+
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
 
   static SharedPreferences? prefs;
-  static final Map<String, dynamic> _cache = {};
+
+  // we actually don't need to cache ourselves
+  // the shared_preferences library does that for us
+  static final Map<SettingsKey, dynamic> _cache = {};
 
   @override
   State<StatefulWidget> createState() => _SettingsState();
 
-  static bool set<T>(String key, T value) {
+  static bool set<T>(SettingsKey key, T value) {
+    var keyString = key.name;
+    value = value ?? key.defaultValue as T;
+
     if (T == int) {
-      prefs!.setInt(key, value as int);
+      prefs!.setInt(keyString, value as int);
     } else if (T == double) {
-      prefs!.setDouble(key, value as double);
+      prefs!.setDouble(keyString, value as double);
     } else if (T == bool) {
-      prefs!.setBool(key, value as bool);
+      prefs!.setBool(keyString, value as bool);
     } else {
-      prefs!.setString(key, '$value');
+      prefs!.setString(keyString, '$value');
     }
 
     _cache[key] = value;
-    print('Saved $key: $value');
+    print('Saved $keyString: $value');
     return true;
   }
 
-  static T get<T>(String key, T defaultValue) {
-    T value = defaultValue;
+  static T get<T>(SettingsKey key) {
+    var value = key.defaultValue as T;
     if (_cache.containsKey(key)) {
       return _cache[key] as T;
     }
 
-    if (prefs!.containsKey(key)) {
+    var keyString = key.name;
+
+    if (prefs!.containsKey(keyString)) {
       if (T == int) {
-        value = prefs!.getInt(key) as T;
+        value = prefs!.getInt(keyString) as T;
       } else if (T == double) {
-        value = prefs!.getDouble(key) as T;
+        value = prefs!.getDouble(keyString) as T;
       } else if (T == bool) {
-        value = prefs!.getBool(key) as T;
+        value = prefs!.getBool(keyString) as T;
       } else {
-        value = prefs!.getString(key) as T;
+        value = prefs!.getString(keyString) as T;
       }
-      _cache[key] = value;
       print('Loaded $key: $value');
     }
+
+    _cache[key] = value;
     return value;
   }
 }
 
 class _SettingsState extends State<Settings> {
   bool _isStartingValid = true;
-
-  late int _players;
-  late int _starting;
-  late bool _autoDecide;
-  late bool _holdToReset;
-  late bool _color;
-  late bool _showCounters;
-  late int _swipeSens;
 
   late Timer _timer;
   String _updateString = '';
@@ -77,13 +93,6 @@ class _SettingsState extends State<Settings> {
       overlays: SystemUiOverlay.values,
     );
 
-    _players = Settings.get('players', 2);
-    _starting = Settings.get('starting', 20);
-    _autoDecide = Settings.get('autoDecide', false);
-    _holdToReset = Settings.get('holdToReset', true);
-    _color = Settings.get('color', false);
-    _showCounters = Settings.get('showCounters', true);
-    _swipeSens = Settings.get('swipeSens', 35);
     _startTimer();
   }
 
@@ -117,12 +126,12 @@ class _SettingsState extends State<Settings> {
 
   void _changeSens(int? sens) {
     setState(() {
-      Settings.set('swipeSens', sens ?? 35);
+      Settings.set(SettingsKey.swipeSens, sens);
     });
   }
 
   String _lastUpdateString() {
-    var lastUpdate = Settings.get('lastUpdate', 0);
+    var lastUpdate = Settings.get<int>(SettingsKey.lastUpdate);
     if (lastUpdate == 0) return 'Last checked never';
 
     var since = DateTime.now().difference(
@@ -145,7 +154,10 @@ class _SettingsState extends State<Settings> {
     launchUrl(Uri.parse('https://github.com/mittsq/abacus/releases'));
 
     setState(() {
-      Settings.set('lastUpdate', DateTime.now().millisecondsSinceEpoch);
+      Settings.set(
+        SettingsKey.lastUpdate,
+        DateTime.now().millisecondsSinceEpoch,
+      );
     });
 
     // var gh = GitHub();
@@ -158,9 +170,11 @@ class _SettingsState extends State<Settings> {
   Widget build(BuildContext context) {
     void saveAndClose(String value) {
       setState(() {
-        Settings.set('starting', _starting = int.parse(value));
+        Settings.set(SettingsKey.starting, int.parse(value));
       });
     }
+
+    var players = Settings.get<int>(SettingsKey.players);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -173,29 +187,29 @@ class _SettingsState extends State<Settings> {
       body: ListView(
         children: [
           ListTile(
-            title: Text('Number of Players ${_players == 1 ? '⚠️' : ''}'),
+            title: Text('Number of Players ${players == 1 ? '⚠️' : ''}'),
             trailing: SizedBox(
               width: 150,
               child: Row(
                 children: [
                   Expanded(
                     child: Slider(
-                      value: log(_players) / log(2),
+                      value: log(players) / log(2),
                       min: 0,
                       max: 2,
                       divisions: 2,
                       onChanged: (value) {
                         setState(() {
                           Settings.set(
-                            'players',
-                            _players = pow(2, value).toInt(),
+                            SettingsKey.players,
+                            players = pow(2, value).toInt(),
                           );
                         });
                       },
                     ),
                   ),
                   Text(
-                    '$_players',
+                    '$players',
                     textAlign: TextAlign.right,
                   ),
                 ],
@@ -207,7 +221,7 @@ class _SettingsState extends State<Settings> {
             trailing: SizedBox(
               width: 100,
               child: TextFormField(
-                initialValue: '$_starting',
+                initialValue: '${Settings.get<int>(SettingsKey.starting)}',
                 keyboardType: TextInputType.number,
                 textAlign: TextAlign.center,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -218,7 +232,7 @@ class _SettingsState extends State<Settings> {
                   setState(() {
                     var x = int.tryParse(value);
                     if (_isStartingValid = (x != null)) {
-                      Settings.set('starting', _starting = x!);
+                      Settings.set(SettingsKey.starting, x!);
                     }
                   });
                 },
@@ -227,19 +241,19 @@ class _SettingsState extends State<Settings> {
           ),
           SwitchListTile(
             title: const Text('Decide Starting Player on Reset'),
-            value: _autoDecide,
+            value: Settings.get<bool>(SettingsKey.autoDecide),
             onChanged: (value) {
               setState(() {
-                Settings.set('autoDecide', _autoDecide = value);
+                Settings.set(SettingsKey.autoDecide, value);
               });
             },
           ),
           SwitchListTile(
             title: const Text('Hold the Menu Icon to Reset'),
-            value: _holdToReset,
+            value: Settings.get<bool>(SettingsKey.holdToReset),
             onChanged: (value) {
               setState(() {
-                Settings.set('holdToReset', _holdToReset = value);
+                Settings.set(SettingsKey.holdToReset, value);
               });
             },
           ),
@@ -250,10 +264,10 @@ class _SettingsState extends State<Settings> {
               child: DropdownButton(
                 onChanged: ((value) {
                   setState(() {
-                    Settings.set('swipeSens', _swipeSens = value as int? ?? 35);
+                    Settings.set(SettingsKey.swipeSens, value as int?);
                   });
                 }),
-                value: _swipeSens,
+                value: Settings.get<int>(SettingsKey.swipeSens),
                 alignment: AlignmentDirectional.centerStart,
                 items: const [
                   DropdownMenuItem(
@@ -274,19 +288,19 @@ class _SettingsState extends State<Settings> {
           ),
           SwitchListTile(
             title: const Text('Color Effects on Life Change'),
-            value: _color,
+            value: Settings.get<bool>(SettingsKey.color),
             onChanged: (value) {
               setState(() {
-                Settings.set('color', _color = value);
+                Settings.set(SettingsKey.color, value);
               });
             },
           ),
           SwitchListTile(
             title: const Text('Always Show Non-Zero Counters'),
-            value: _showCounters,
+            value: Settings.get<bool>(SettingsKey.showCounters),
             onChanged: (value) {
               setState(() {
-                Settings.set('showCounters', _showCounters = value);
+                Settings.set(SettingsKey.showCounters, value);
               });
             },
           ),

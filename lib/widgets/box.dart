@@ -67,7 +67,7 @@ class _CounterBoxState extends State<CounterBox>
           setState(() {
             widget.parent.counter.set(
               value: widget.unicode == Unicodes.life
-                  ? Settings.get('starting', 20)
+                  ? Settings.get<int>(SettingsKey.starting)
                   : 0,
               key: widget.unicode,
             );
