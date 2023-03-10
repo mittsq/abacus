@@ -146,41 +146,45 @@ class _CounterState extends State<Counter> {
 
     var rounded = const BorderRadius.all(Radius.circular(10));
 
-    var otherList = widget.counter.counters.entries
-        .where((c) =>
-            c.value != 0 &&
-            c.key != Unicodes.life &&
-            c.key != widget.counter.selected)
-        .map(
-          (c) => TextSpan(
-            text: c.key.code,
-            style: miniStyle?.copyWith(
-              fontFamily: 'Mana',
-              color: c.key.color,
+    var otherList = <TextSpan>[];
+    if (Settings.get('showCounters', true)) {
+      otherList.addAll(
+        widget.counter.counters.entries
+            .where((c) =>
+                c.value != 0 &&
+                c.key != Unicodes.life &&
+                c.key != widget.counter.selected)
+            .map(
+              (c) => TextSpan(
+                text: c.key.code,
+                style: miniStyle?.copyWith(
+                  fontFamily: 'Mana',
+                  color: c.key.color,
+                ),
+                children: [
+                  TextSpan(
+                    text: ' ${c.value}\n',
+                    style: miniStyle,
+                  ),
+                ],
+              ),
             ),
+      );
+
+      if (widget.counter.selected != Unicodes.life) {
+        otherList.add(
+          TextSpan(
+            text: '\ue95c',
+            style: miniStyle?.copyWith(fontFamily: 'Mana'),
             children: [
               TextSpan(
-                text: ' ${c.value}\n',
+                text: ' ${widget.counter.get(key: Unicodes.life)}\n',
                 style: miniStyle,
               ),
             ],
           ),
-        )
-        .toList();
-
-    if (widget.counter.selected != Unicodes.life) {
-      otherList.add(
-        TextSpan(
-          text: '\ue95c',
-          style: miniStyle?.copyWith(fontFamily: 'Mana'),
-          children: [
-            TextSpan(
-              text: ' ${widget.counter.get(key: Unicodes.life)}\n',
-              style: miniStyle,
-            ),
-          ],
-        ),
-      );
+        );
+      }
     }
 
     var main = Stack(
@@ -241,12 +245,12 @@ class _CounterState extends State<Counter> {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: Text.rich(
-            TextSpan(
-              children: otherList,
-            ),
+        AnimatedOpacity(
+          opacity: otherList.isEmpty ? 0 : 1,
+          duration: duration,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text.rich(TextSpan(children: otherList)),
           ),
         ),
         GestureDetector(

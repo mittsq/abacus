@@ -33,8 +33,10 @@ class CountWrapper {
   }
 
   void reset(int start) {
-    for (var c in counters.values) {
-      c = 0;
+    for (var c in counters.entries) {
+      if (c.key != Unicodes.life) {
+        counters[c.key] = 0;
+      }
     }
 
     counters[Unicodes.life] = start;
