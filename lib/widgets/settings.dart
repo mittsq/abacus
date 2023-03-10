@@ -56,7 +56,6 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  final _settingsKey = GlobalKey<FormState>();
   bool _isStartingValid = true;
 
   late int _players;
@@ -65,6 +64,7 @@ class _SettingsState extends State<Settings> {
   late bool _holdToReset;
   late bool _color;
   late bool _showCounters;
+  late int _swipeSens;
 
   late Timer _timer;
   String _updateString = '';
@@ -83,6 +83,7 @@ class _SettingsState extends State<Settings> {
     _holdToReset = Settings.get('holdToReset', true);
     _color = Settings.get('color', false);
     _showCounters = Settings.get('showCounters', true);
+    _swipeSens = Settings.get('swipeSens', 35);
     _startTimer();
   }
 
@@ -113,8 +114,6 @@ class _SettingsState extends State<Settings> {
       SystemUiMode.immersiveSticky,
     );
   }
-
-  int get _swipeSens => Settings.get('swipeSens', 35);
 
   void _changeSens(int? sens) {
     setState(() {
@@ -249,7 +248,11 @@ class _SettingsState extends State<Settings> {
             trailing: SizedBox(
               width: 100,
               child: DropdownButton(
-                onChanged: _changeSens,
+                onChanged: ((value) {
+                  setState(() {
+                    Settings.set('swipeSens', _swipeSens = value as int? ?? 35);
+                  });
+                }),
                 value: _swipeSens,
                 alignment: AlignmentDirectional.centerStart,
                 items: const [
