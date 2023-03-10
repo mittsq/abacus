@@ -19,7 +19,7 @@ class Counter extends StatefulWidget {
 }
 
 class _CounterState extends State<Counter> {
-  late int _commitCount = widget.counter.count;
+  late int _commitCount = widget.counter.getSelected();
   bool _commit = true;
   double? _offset;
   int? _oldCount;
@@ -33,13 +33,15 @@ class _CounterState extends State<Counter> {
   void initState() {
     super.initState();
 
-    widget.counter.listeners.add(() {
-      _pageController.animateToPage(
-        0,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeOutExpo,
-      );
-    });
+    widget.counter.listeners.add(_jump);
+  }
+
+  void _jump() {
+    _pageController.animateToPage(
+      0,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOutExpo,
+    );
   }
 
   void _increment({bool invert = false}) {
@@ -51,7 +53,7 @@ class _CounterState extends State<Counter> {
   void _dragStart(DragStartDetails args) {
     if (_offset != null) return;
     _offset = args.globalPosition.dy;
-    _oldCount ??= widget.counter.count;
+    _oldCount ??= widget.counter.getSelected();
   }
 
   void _dragUpdate(DragUpdateDetails args) {
@@ -73,9 +75,9 @@ class _CounterState extends State<Counter> {
   void _setCount(int count) {
     setState(() {
       widget.counter.glow = false;
-      if (_commit) _commitCount = widget.counter.count;
+      if (_commit) _commitCount = widget.counter.getSelected();
       _commit = false;
-      widget.counter.count = count;
+      widget.counter.setSelected(count);
       _lastUpdate = DateTime.now();
     });
     var delay = const Duration(seconds: 3);
@@ -173,9 +175,12 @@ class _CounterState extends State<Counter> {
                   Expanded(
                     child: Align(
                       alignment: Alignment.bottomCenter,
-                      child: Icon(
-                        Icons.favorite_rounded,
-                        color: countStyle?.color,
+                      child: Text(
+                        widget.counter.selected.code,
+                        style: miniStyle?.copyWith(
+                          fontFamily: 'Mana',
+                          color: widget.counter.selected.color,
+                        ),
                       ),
                     ),
                   ),
@@ -183,7 +188,7 @@ class _CounterState extends State<Counter> {
                     width: 175,
                     child: Center(
                       child: Text(
-                        '${widget.counter.count}',
+                        '${widget.counter.getSelected()}',
                         style: countStyle,
                       ),
                     ),
@@ -236,23 +241,46 @@ class _CounterState extends State<Counter> {
       ],
     );
 
-    Widget buildBox({Color? color, required String text}) {
+    Widget buildBox(Unicodes onTap) {
+      var selected = widget.counter.selected == onTap;
+      var icon = Text(
+        onTap.code,
+        style: TextStyle(
+          fontFamily: 'Mana',
+          color: onTap.color ?? countStyle?.color,
+          fontSize: 35,
+        ),
+      );
+
+      var ret = Icon(
+        Icons.arrow_back_rounded,
+        color: onTap.color ?? countStyle?.color,
+        size: 35,
+      );
+
       return Material(
         type: MaterialType.transparency,
         child: InkWell(
-          onTap: () {},
+          onTap: () {
+            setState(() {
+              _commit = true;
+              widget.counter.selected = selected ? Unicodes.life : onTap;
+              _jump();
+            });
+          },
           child: Container(
             width: 100,
             height: 100,
-            color: color?.withAlpha(50) ?? countStyle?.color?.withAlpha(50),
+            color:
+                onTap.color?.withAlpha(50) ?? countStyle?.color?.withAlpha(50),
             child: Center(
-              child: Text(
-                text,
-                style: TextStyle(
-                  fontFamily: 'Mana',
-                  color: color ?? countStyle?.color,
-                  fontSize: 35,
-                ),
+              child: AnimatedCrossFade(
+                firstChild: icon,
+                secondChild: ret,
+                crossFadeState: selected
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
+                duration: duration ~/ 2,
               ),
             ),
           ),
@@ -271,42 +299,24 @@ class _CounterState extends State<Counter> {
               direction: ls ? Axis.vertical : Axis.horizontal,
               mainAxisSize: MainAxisSize.min,
               children: [
-                buildBox(
-                  color: Unicodes.white.color,
-                  text: Unicodes.white.code,
-                ),
-                buildBox(
-                  color: Unicodes.blue.color,
-                  text: Unicodes.blue.code,
-                ),
+                buildBox(Unicodes.white),
+                buildBox(Unicodes.blue),
               ],
             ),
             Flex(
               direction: ls ? Axis.vertical : Axis.horizontal,
               mainAxisSize: MainAxisSize.min,
               children: [
-                buildBox(
-                  color: Unicodes.black.color,
-                  text: Unicodes.black.code,
-                ),
-                buildBox(
-                  color: Unicodes.red.color,
-                  text: Unicodes.red.code,
-                ),
+                buildBox(Unicodes.black),
+                buildBox(Unicodes.red),
               ],
             ),
             Flex(
               direction: ls ? Axis.vertical : Axis.horizontal,
               mainAxisSize: MainAxisSize.min,
               children: [
-                buildBox(
-                  color: Unicodes.green.color,
-                  text: Unicodes.green.code,
-                ),
-                buildBox(
-                  color: Unicodes.colorless.color,
-                  text: Unicodes.colorless.code,
-                ),
+                buildBox(Unicodes.green),
+                buildBox(Unicodes.colorless),
               ],
             ),
           ],
@@ -321,9 +331,9 @@ class _CounterState extends State<Counter> {
           direction: ls ? Axis.vertical : Axis.horizontal,
           mainAxisSize: MainAxisSize.min,
           children: [
-            buildBox(text: Unicodes.poison.code),
-            buildBox(text: Unicodes.storm.code),
-            buildBox(text: Unicodes.damage.code),
+            buildBox(Unicodes.poison),
+            buildBox(Unicodes.storm),
+            buildBox(Unicodes.damage),
           ],
         ),
       ),

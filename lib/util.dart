@@ -16,7 +16,8 @@ enum Unicodes {
   colorless('\ue904', Color(0xffd7d0cd)),
   damage('\ue628', null),
   storm('\ue907', null),
-  poison('\ue618', null);
+  poison('\ue618', null),
+  life(' ', null);
 
   const Unicodes(this.code, this.color);
   final String code;
