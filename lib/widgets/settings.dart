@@ -57,6 +57,8 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   final _settingsKey = GlobalKey<FormState>();
+  bool _isStartingValid = true;
+
   late int _players;
   late int _starting;
   late bool _autoDecide;
@@ -224,6 +226,12 @@ class _SettingsState extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
+    void saveAndClose(String value) {
+      setState(() {
+        Settings.set('starting', _starting = int.parse(value));
+      });
+    }
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -235,46 +243,56 @@ class _SettingsState extends State<Settings> {
       body: ListView(
         children: [
           ListTile(
-            title: const Text('Number of Players'),
-            // subtitle: Text(
-            //   _players == 1 ? 'Unsupported' : '',
-            //   style: const TextStyle(color: Colors.red),
-            // ),
+            title: Text('Number of Players ${_players == 1 ? '⚠️' : ''}'),
             trailing: SizedBox(
-              width: 200,
-              child: Row(children: [
-                Expanded(
-                  child: Text(
-                    '${_players == 1 ? '⚠️' : ''} $_players',
+              width: 150,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Slider(
+                      value: log(_players) / log(2),
+                      min: 0,
+                      max: 2,
+                      divisions: 2,
+                      onChanged: (value) {
+                        setState(() {
+                          Settings.set(
+                            'players',
+                            _players = pow(2, value).toInt(),
+                          );
+                        });
+                      },
+                    ),
+                  ),
+                  Text(
+                    '$_players',
                     textAlign: TextAlign.right,
                   ),
-                ),
-                SizedBox(
-                  width: 150,
-                  child: Slider(
-                    value: log(_players) / log(2),
-                    min: 0,
-                    max: 2,
-                    divisions: 2,
-                    onChanged: (value) {
-                      setState(() {
-                        Settings.set(
-                          'players',
-                          _players = pow(2, value).toInt(),
-                        );
-                      });
-                    },
-                  ),
-                ),
-              ]),
+                ],
+              ),
             ),
           ),
           ListTile(
-            title: const Text('Starting Life Total'),
-            trailing: OutlinedButton.icon(
-              onPressed: () => _editStartingLife(context),
-              icon: const Icon(Icons.edit),
-              label: Text('$_starting'),
+            title: Text('Starting Life Total ${_isStartingValid ? '' : '⚠️'}'),
+            trailing: SizedBox(
+              width: 100,
+              child: TextFormField(
+                initialValue: '$_starting',
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                onSaved: (value) => saveAndClose(value!),
+                onFieldSubmitted: (value) => saveAndClose(value),
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                onChanged: (value) {
+                  setState(() {
+                    var x = int.tryParse(value);
+                    if (_isStartingValid = (x != null)) {
+                      Settings.set('starting', _starting = x!);
+                    }
+                  });
+                },
+              ),
             ),
           ),
           SwitchListTile(
@@ -334,6 +352,11 @@ class _SettingsState extends State<Settings> {
             title: const Text('Check for updates'),
             subtitle: Text(_updateString = _lastUpdateString()),
             onTap: () => _checkForUpdates(),
+          ),
+          ListTile(
+            title: const Text('Abacus v1.0.0'),
+            subtitle: const Text('Made with love by mittsq using Flutter'),
+            onTap: () => showLicensePage(context: context),
           ),
         ],
       ),
