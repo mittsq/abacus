@@ -44,8 +44,13 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
       (i) => CountWrapper(Settings.get<int>(SettingsKey.starting)),
     );
 
-    Wakelock.enable();
     _showOverlays(false);
+
+    // bug with JS wakelock library
+    Future.delayed(
+      const Duration(seconds: 1),
+      () => Wakelock.enable(),
+    );
   }
 
   @override

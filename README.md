@@ -14,6 +14,20 @@ Abacus attempts to combine the best features of other life counters while leavin
 * Options to enable only what you need.
 * Support for literally every relevant platform.
 
+## Changelog
+### v1.0.2
+* Fixed some web-related bugs.
+  * Wakelock library needs time to initialize.
+  * Odd bug with `shared_preferences` and nullable primitives caused Settings to crash.
+
+### v1.0.1
+* Small changes related to async presentation.
+
+### v1.0.0
+* Initial release!
+
+---
+
 ## Screenshots
 ### Main counter screen at 2 and 4 players
 ![Two Players](img/main.png)

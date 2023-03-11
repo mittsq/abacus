@@ -1,11 +1,11 @@
 {
-    "name": "abacus",
-    "short_name": "abacus",
+    "name": "Abacus",
+    "short_name": "Abacus",
     "start_url": ".",
-    "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "display": "fullscreen",
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "description": "A simple, but feature-rich, counter for tabletop games.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

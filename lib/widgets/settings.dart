@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:github/github.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -124,20 +125,14 @@ class _SettingsState extends State<Settings> {
     );
   }
 
-  void _changeSens(int? sens) {
-    setState(() {
-      Settings.set(SettingsKey.swipeSens, sens);
-    });
-  }
-
   String _lastUpdateString() {
     var lastUpdate = Settings.get<int>(SettingsKey.lastUpdate);
-    if (lastUpdate == 0) return 'Last checked never';
+    if (lastUpdate == 0) return 'never';
 
     var since = DateTime.now().difference(
       DateTime.fromMillisecondsSinceEpoch(lastUpdate),
     );
-    var s = 'Last checked ';
+    var s = '';
     if (since.inDays > 0) {
       s += '${since.inDays} day${since.inDays == 1 ? '' : 's'}';
     } else if (since.inHours > 0) {
@@ -164,6 +159,11 @@ class _SettingsState extends State<Settings> {
     // var releases = await gh.repositories
     //     .listReleases(RepositorySlug('mittsq', 'abacus'))
     //     .first;
+  }
+
+  Future<String> _getVersion() async {
+    var info = await PackageInfo.fromPlatform();
+    return info.version;
   }
 
   @override
@@ -263,12 +263,14 @@ class _SettingsState extends State<Settings> {
               width: 100,
               child: DropdownButton(
                 onChanged: ((value) {
+                  // workaround for nullables for some reason
+                  var x = int.parse(value.toString());
                   setState(() {
-                    Settings.set(SettingsKey.swipeSens, value as int?);
+                    Settings.set(SettingsKey.swipeSens, x);
                   });
                 }),
                 value: Settings.get<int>(SettingsKey.swipeSens),
-                alignment: AlignmentDirectional.centerStart,
+                alignment: Alignment.center,
                 items: const [
                   DropdownMenuItem(
                     value: 50,
@@ -307,12 +309,18 @@ class _SettingsState extends State<Settings> {
           const Divider(),
           ListTile(
             title: const Text('Check for updates'),
-            subtitle: Text(_updateString),
+            subtitle: Text('Last checked $_updateString'),
             onTap: () => _checkForUpdates(),
           ),
           ListTile(
-            title: const Text('Abacus v1.0.0'),
-            subtitle: const Text('Made with love by mittsq using Flutter'),
+            title: FutureBuilder(
+              builder: (context, snapshot) {
+                var version = snapshot.hasData ? 'v${snapshot.data}' : '';
+                return Text('Abacus $version');
+              },
+              future: _getVersion(),
+            ),
+            subtitle: const Text('Made with ❤ by mittsq using Flutter'),
             onTap: () => showLicensePage(context: context),
           ),
         ],
