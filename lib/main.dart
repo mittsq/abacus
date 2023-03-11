@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
         child: const Holder(),
       ),
       scrollBehavior: AppScrollBehavior(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

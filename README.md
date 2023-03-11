@@ -1,16 +1,27 @@
-# abacus
+# Abacus
 
-A new Flutter project.
+A simple counting app for tabletop games such as Magic: The Gathering.
+Abacus attempts to combine the best features of other life counters while leaving out the worst features, all while looking pretty in the process.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+* Tap or swipe to modify counters.
+* Counters for life, mana, and more.
+* Two- and four-player modes.
+* Portrait and landscape support.
+* A spinner to decide who goes first.
+* Fancy color effects.
+* Options to enable only what you need.
+* Support for literally every relevant platform.
 
-A few resources to get you started if this is your first Flutter project:
+## Screenshots
+### Main counter screen at 2 and 4 players
+![Two Players](img/main.png)
+![Four Players](img/four.png)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Expanded menu with mana and other counter buttons visible
+![Counters](img/counters.png)
+![Effects](img/effects.png)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### The settings screen
+![Settings](img/settings.png)

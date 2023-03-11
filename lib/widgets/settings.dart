@@ -240,7 +240,7 @@ class _SettingsState extends State<Settings> {
             ),
           ),
           SwitchListTile(
-            title: const Text('Decide Starting Player on Reset'),
+            title: const Text('Spin the Needle on Reset'),
             value: Settings.get<bool>(SettingsKey.autoDecide),
             onChanged: (value) {
               setState(() {
@@ -307,7 +307,7 @@ class _SettingsState extends State<Settings> {
           const Divider(),
           ListTile(
             title: const Text('Check for updates'),
-            subtitle: Text(_updateString = _lastUpdateString()),
+            subtitle: Text(_updateString),
             onTap: () => _checkForUpdates(),
           ),
           ListTile(
