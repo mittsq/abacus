@@ -300,6 +300,11 @@ class _CounterState extends State<Counter> {
       });
     }
 
+    // probably better to bubble up the state change somehow
+    void reloadState() {
+      setState(() {});
+    }
+
     var mana = emplace(Flex(
       direction: ls ? Axis.horizontal : Axis.vertical,
       mainAxisSize: MainAxisSize.min,
@@ -312,11 +317,13 @@ class _CounterState extends State<Counter> {
               parent: widget,
               unicode: Unicodes.white,
               onSelect: onBoxSelect,
+              forceUpdate: reloadState,
             ),
             CounterBox(
               parent: widget,
               unicode: Unicodes.blue,
               onSelect: onBoxSelect,
+              forceUpdate: reloadState,
             ),
           ],
         ),
@@ -328,11 +335,13 @@ class _CounterState extends State<Counter> {
               parent: widget,
               unicode: Unicodes.black,
               onSelect: onBoxSelect,
+              forceUpdate: reloadState,
             ),
             CounterBox(
               parent: widget,
               unicode: Unicodes.red,
               onSelect: onBoxSelect,
+              forceUpdate: reloadState,
             ),
           ],
         ),
@@ -344,11 +353,13 @@ class _CounterState extends State<Counter> {
               parent: widget,
               unicode: Unicodes.green,
               onSelect: onBoxSelect,
+              forceUpdate: reloadState,
             ),
             CounterBox(
               parent: widget,
               unicode: Unicodes.colorless,
               onSelect: onBoxSelect,
+              forceUpdate: reloadState,
             ),
           ],
         ),
@@ -364,16 +375,19 @@ class _CounterState extends State<Counter> {
             parent: widget,
             unicode: Unicodes.poison,
             onSelect: onBoxSelect,
+            forceUpdate: reloadState,
           ),
           CounterBox(
             parent: widget,
             unicode: Unicodes.storm,
             onSelect: onBoxSelect,
+            forceUpdate: reloadState,
           ),
           CounterBox(
             parent: widget,
             unicode: Unicodes.damage,
             onSelect: onBoxSelect,
+            forceUpdate: reloadState,
           ),
         ],
       ),

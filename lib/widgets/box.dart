@@ -10,11 +10,13 @@ class CounterBox extends StatefulWidget {
     required this.parent,
     required this.unicode,
     this.onSelect,
+    required this.forceUpdate,
   });
 
   final Counter parent;
   final Unicodes unicode;
   final Function()? onSelect;
+  final Function() forceUpdate;
 
   @override
   State<CounterBox> createState() => _CounterBoxState();
@@ -72,6 +74,8 @@ class _CounterBoxState extends State<CounterBox>
               key: widget.unicode,
             );
           });
+
+          widget.forceUpdate();
         },
         child: Container(
           width: 100,
