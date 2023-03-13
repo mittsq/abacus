@@ -262,8 +262,7 @@ class _CounterState extends State<Counter> {
                 child: Material(
                   type: MaterialType.transparency,
                   child: InkWell(
-                    onTapDown: (details) =>
-                        _increment(invert: widget.isFlipped && !ls),
+                    onTapDown: (details) => _increment(invert: false),
                   ),
                 ),
               ),
@@ -271,8 +270,7 @@ class _CounterState extends State<Counter> {
                 child: Material(
                   type: MaterialType.transparency,
                   child: InkWell(
-                    onTapDown: (details) =>
-                        _increment(invert: !(widget.isFlipped && !ls)),
+                    onTapDown: (details) => _increment(invert: true),
                   ),
                 ),
               ),
