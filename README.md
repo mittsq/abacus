@@ -3,6 +3,11 @@
 A simple counting app for tabletop games such as Magic: The Gathering.
 Abacus attempts to combine the best features of other life counters while leaving out the worst features, all while looking pretty in the process.
 
+Request a feature or report a bug on the [Issues](https://github.com/mittsq/abacus/issues) page.
+See the changelog [here](./CHANGELOG.md).  
+Mana symbols provided by [Andrew Gioia's Mana font](https://github.com/andrewgioia/mana).  
+Abacus is licensed under the [GNU Affero GPL v3](https://opensource.org/license/agpl-v3/).
+
 ## Features
 
 * Tap or swipe to modify counters.
@@ -13,18 +18,6 @@ Abacus attempts to combine the best features of other life counters while leavin
 * Fancy color effects.
 * Options to enable only what you need.
 * Support for literally every relevant platform.
-
-## Changelog
-### v1.0.2
-* Fixed some web-related bugs.
-  * Wakelock library needs time to initialize.
-  * Odd bug with `shared_preferences` and nullable primitives caused Settings to crash.
-
-### v1.0.1
-* Small changes related to async presentation.
-
-### v1.0.0
-* Initial release!
 
 ---
 

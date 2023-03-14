@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:github/github.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -16,7 +15,7 @@ enum SettingsKey {
   color(true),
   showCounters(true),
   swipeSens(35),
-  lastUpdate(0);
+  ;
 
   final dynamic defaultValue;
 
@@ -83,9 +82,6 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   bool _isStartingValid = true;
 
-  late Timer _timer;
-  String _updateString = '';
-
   @override
   void initState() {
     super.initState();
@@ -93,77 +89,23 @@ class _SettingsState extends State<Settings> {
       SystemUiMode.manual,
       overlays: SystemUiOverlay.values,
     );
-
-    _startTimer();
-  }
-
-  void _startTimer() {
-    _timer = Timer.periodic(
-      const Duration(seconds: 1),
-      (t) => {setState(() => _updateString = _lastUpdateString())},
-    );
-  }
-
-  @override
-  void activate() {
-    super.activate();
-    _startTimer();
-  }
-
-  @override
-  void deactivate() {
-    super.deactivate();
-    _timer.cancel();
   }
 
   @override
   void dispose() {
     super.dispose();
-    _timer.cancel();
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.immersiveSticky,
     );
   }
 
-  String _lastUpdateString() {
-    var lastUpdate = Settings.get<int>(SettingsKey.lastUpdate);
-    if (lastUpdate == 0) return 'never';
-
-    var since = DateTime.now().difference(
-      DateTime.fromMillisecondsSinceEpoch(lastUpdate),
-    );
-    var s = '';
-    if (since.inDays > 0) {
-      s += '${since.inDays} day${since.inDays == 1 ? '' : 's'}';
-    } else if (since.inHours > 0) {
-      s += '${since.inHours} hour${since.inHours == 1 ? '' : 's'}';
-    } else if (since.inMinutes > 0) {
-      s += '${since.inMinutes} minute${since.inMinutes == 1 ? '' : 's'}';
-    } else {
-      s += '${since.inSeconds} second${since.inSeconds == 1 ? '' : 's'}';
-    }
-    return '$s ago';
-  }
-
-  Future<void> _checkForUpdates() async {
-    launchUrl(Uri.parse('https://github.com/mittsq/abacus/releases'));
-
-    setState(() {
-      Settings.set(
-        SettingsKey.lastUpdate,
-        DateTime.now().millisecondsSinceEpoch,
-      );
-    });
-
-    // var gh = GitHub();
-    // var releases = await gh.repositories
-    //     .listReleases(RepositorySlug('mittsq', 'abacus'))
-    //     .first;
-  }
-
   Future<String> _getVersion() async {
     var info = await PackageInfo.fromPlatform();
     return info.version;
+  }
+
+  void _openIssues() {
+    launchUrl(Uri.parse('https://github.com/mittsq/abacus'));
   }
 
   @override
@@ -308,9 +250,8 @@ class _SettingsState extends State<Settings> {
           ),
           const Divider(),
           ListTile(
-            title: const Text('Check for updates'),
-            subtitle: Text('Last checked $_updateString'),
-            onTap: () => _checkForUpdates(),
+            title: const Text('Report a bug or request a feature'),
+            onTap: () => _openIssues(),
           ),
           ListTile(
             title: FutureBuilder(
