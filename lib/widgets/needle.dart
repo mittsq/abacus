@@ -55,24 +55,31 @@ class _NeedlePainter extends CustomPainter {
 class MyTween extends Tween<double> {
   final double result;
   final double m;
+  final double p;
   final double offset;
 
   MyTween({
     required this.m,
+    required this.p,
     this.result = 0,
     this.offset = 0,
   }) : super(end: result + offset, begin: offset) {
     assert(result >= 0);
     assert(m > 0 && m < 1);
+    assert(p > 0 && (5 * p) % 1 == 0);
   }
 
-  @override
+  @override // https://desmos.com/calculator/rygujepgvi
   double lerp(double t) {
-    var v = (3 * t) / (2 * m + 1);
-    if (t > m) {
-      v = (t * t * t - 3 * t * t + 3 * t + 2 * m * m * m - 3 * m * m) /
-          (2 * math.pow(m, 3) - 3 * math.pow(m, 2) + 1);
+    double v;
+
+    if (t < m) {
+      v = p * t / (1 - m + p * m);
+    } else {
+      var a = math.pow(m - 1, 1 - p) / (1 - m + p * m);
+      v = a * math.pow(t - 1, p) + 1;
     }
+
     return v * result + offset;
   }
 }

@@ -104,6 +104,7 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
     _needleAnimation = _needleController.drive(
       MyTween(
         m: 0.15,
+        p: 3,
         result: r + 6,
         offset: o,
       ),
