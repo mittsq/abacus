@@ -243,6 +243,12 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
       rightBottom = rightBottom.reversed.toList();
     }
 
+    var needleColor = Colors.white;
+    if (Theme.of(context).colorScheme.primary is MaterialColor) {
+      var mc = Theme.of(context).colorScheme.primary as MaterialColor;
+      needleColor = mc[300] ?? needleColor;
+    }
+
     return Stack(
       children: [
         Padding(
@@ -360,8 +366,7 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
               turns: _needleAnimation,
               child: Center(
                 child: NeedleWidget(
-                  color: Theme.of(context).textTheme.displayLarge?.color ??
-                      Colors.white,
+                  color: needleColor,
                 ),
               ),
             ),

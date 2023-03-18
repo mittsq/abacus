@@ -191,6 +191,16 @@ class _SettingsState extends State<Settings> {
           ListTile(
             title: const Text('Number of Players'),
             trailing: SegmentedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.resolveWith<Color?>(
+                  (states) {
+                    if (states.contains(MaterialState.selected)) {
+                      return Theme.of(context).colorScheme.primary;
+                    }
+                    return null;
+                  },
+                ),
+              ),
               onSelectionChanged: (v) {
                 setState(() {
                   Settings.set(SettingsKey.players, v.single as int);
