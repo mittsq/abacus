@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
-class NeedleWidget extends StatefulWidget {
+class NeedleWidget extends StatelessWidget {
   const NeedleWidget({super.key, this.color = Colors.white});
 
   final Color color;
 
   @override
-  State<StatefulWidget> createState() => _NeedleState();
-}
-
-class _NeedleState extends State<NeedleWidget> {
-  @override
   Widget build(BuildContext context) {
     return SizedBox.expand(
       child: CustomPaint(
-        painter: _NeedlePainter(widget.color),
+        painter: _NeedlePainter(color),
       ),
     );
   }
