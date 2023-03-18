@@ -1,4 +1,10 @@
 # Changelog
+## v1.1.0
+* Added accent color customization.
+* Added the ability to pin counters to the main screen.
+* Made the needle spinning logic slightly more efficient.
+* Updated runner files for Windows.
+
 ## v1.0.4
 * Added a link in Settings to request features or report bugs.
 * Updated static web files to latest provided by Flutter.
