@@ -7,6 +7,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../util.dart';
+
 enum SettingsKey {
   players(2),
   starting(20),
@@ -15,6 +17,7 @@ enum SettingsKey {
   color(true),
   showCounters(true),
   swipeSens(35),
+  accent(0),
   ;
 
   final dynamic defaultValue;
@@ -108,6 +111,41 @@ class _SettingsState extends State<Settings> {
     launchUrl(Uri.parse('https://github.com/mittsq/abacus'));
   }
 
+  void _chooseAccent() {
+    var list = <Widget>[];
+
+    for (var i = 0; i < accentColors.length; ++i) {
+      list.add(
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: 4,
+            horizontal: 24,
+          ),
+          child: ListTile(
+            leading: SwatchCircle(color: Colors.primaries[i]),
+            title: Text(accentColors[i] ?? ''),
+            onTap: () {
+              Navigator.pop(context);
+              setState(() {
+                Settings.set(SettingsKey.accent, i);
+                // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
+                themeNotifier.notifyListeners();
+              });
+            },
+          ),
+        ),
+      );
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text('Accent Color'),
+        children: list,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     void saveAndClose(String value) {
@@ -117,6 +155,7 @@ class _SettingsState extends State<Settings> {
     }
 
     var players = Settings.get<int>(SettingsKey.players);
+    var colorName = accentColors[Settings.get<int>(SettingsKey.accent)];
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -128,6 +167,27 @@ class _SettingsState extends State<Settings> {
       ),
       body: ListView(
         children: [
+          ListTile(
+            title: const Text('Accent Color'),
+            trailing: SizedBox(
+              width: 200,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: Text(
+                        colorName ?? 'arts',
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
+                  ),
+                  const SwatchCircle(),
+                ],
+              ),
+            ),
+            onTap: _chooseAccent,
+          ),
           ListTile(
             title: Text('Number of Players ${players == 1 ? '⚠️' : ''}'),
             trailing: SizedBox(
@@ -265,6 +325,24 @@ class _SettingsState extends State<Settings> {
             onTap: () => showLicensePage(context: context),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class SwatchCircle extends StatelessWidget {
+  const SwatchCircle({super.key, this.color});
+
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    var c = color ?? Theme.of(context).colorScheme.primary;
+
+    return ClipOval(
+      child: SizedBox.square(
+        dimension: 25,
+        child: ColoredBox(color: c),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:abacus/util.dart';
 import 'package:abacus/widgets/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,15 +18,30 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Abacus',
-      theme: ThemeData.dark(),
-      home: Container(
-        color: Colors.black,
-        child: const Holder(),
-      ),
-      scrollBehavior: AppScrollBehavior(),
-      debugShowCheckedModeBanner: false,
+    return AnimatedBuilder(
+      animation: themeNotifier,
+      child: const Holder(),
+      builder: (context, child) {
+        var theme = ThemeData.dark(useMaterial3: true).copyWith(
+          colorScheme: ColorScheme.fromSwatch(
+            primarySwatch: Colors.primaries[Settings.get<int>(
+              SettingsKey.accent,
+            )],
+            brightness: Brightness.dark,
+          ),
+        );
+
+        return MaterialApp(
+          title: 'Abacus',
+          theme: theme,
+          home: Container(
+            color: Colors.black,
+            child: child,
+          ),
+          scrollBehavior: AppScrollBehavior(),
+          debugShowCheckedModeBanner: false,
+        );
+      },
     );
   }
 }
@@ -37,4 +53,13 @@ class AppScrollBehavior extends MaterialScrollBehavior {
         PointerDeviceKind.mouse,
         PointerDeviceKind.trackpad,
       };
+}
+
+class ThemeNotifier extends ChangeNotifier {
+  int get accent => Settings.get<int>(SettingsKey.accent);
+
+  set accent(int value) {
+    Settings.set(SettingsKey.accent, value);
+    notifyListeners();
+  }
 }
