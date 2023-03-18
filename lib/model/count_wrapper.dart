@@ -23,6 +23,7 @@ class CountWrapper {
   Unicodes selected = Unicodes.life;
 
   List<Function> listeners = [];
+  List<Unicodes> pins = [];
 
   int operator +(int other) {
     return get() + other;
@@ -51,8 +52,19 @@ class CountWrapper {
     return counters[key ?? selected] ?? 0;
   }
 
-  // also yes.
   void set({required int value, Unicodes? key}) {
     counters[key ?? selected] = value;
+  }
+
+  void togglePin(Unicodes code) {
+    if (pins.contains(code)) {
+      pins.remove(code);
+    } else {
+      pins.add(code);
+    }
+  }
+
+  bool isPinned(Unicodes code) {
+    return pins.contains(code);
   }
 }

@@ -186,11 +186,35 @@ class _CounterState extends State<Counter> {
       }
     }
 
-    var main = Stack(
-      children: [
-        ClipRRect(
-          borderRadius: rounded,
-          child: AnimatedContainer(
+    void onBoxSelect() {
+      setState(() {
+        _commit = true;
+        _jump();
+      });
+    }
+
+    // probably better to bubble up the state change somehow
+    void reloadState() {
+      setState(() {});
+    }
+
+    var pins = widget.counter.pins.map((e) {
+      return Expanded(
+        child: CounterBox(
+          parent: widget,
+          unicode: e,
+          onSelect: onBoxSelect,
+          forceUpdate: reloadState,
+          size: const Size.fromHeight(40),
+        ),
+      );
+    });
+
+    var main = ClipRRect(
+      borderRadius: rounded,
+      child: Stack(
+        children: [
+          AnimatedContainer(
             duration: _commit ? duration : duration ~/ 2,
             decoration: BoxDecoration(
               boxShadow: [
@@ -243,41 +267,47 @@ class _CounterState extends State<Counter> {
               ),
             ),
           ),
-        ),
-        AnimatedOpacity(
-          opacity: otherList.isEmpty ? 0 : 1,
-          duration: duration,
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Text.rich(TextSpan(children: otherList)),
+          AnimatedOpacity(
+            opacity: otherList.isEmpty ? 0 : 1,
+            duration: duration,
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text.rich(TextSpan(children: otherList)),
+            ),
           ),
-        ),
-        GestureDetector(
-          onVerticalDragStart: _dragStart,
-          onVerticalDragUpdate: _dragUpdate,
-          onVerticalDragEnd: _dragEnd,
-          child: Column(
+          GestureDetector(
+            onVerticalDragStart: _dragStart,
+            onVerticalDragUpdate: _dragUpdate,
+            onVerticalDragEnd: _dragEnd,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: InkWell(
+                      onTapDown: (details) => _increment(invert: false),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: InkWell(
+                      onTapDown: (details) => _increment(invert: true),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Column(
             children: [
-              Expanded(
-                child: Material(
-                  type: MaterialType.transparency,
-                  child: InkWell(
-                    onTapDown: (details) => _increment(invert: false),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Material(
-                  type: MaterialType.transparency,
-                  child: InkWell(
-                    onTapDown: (details) => _increment(invert: true),
-                  ),
-                ),
-              ),
+              Expanded(child: Container()),
+              Row(children: pins.toList()),
             ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
 
     Widget emplace(Widget child) {
@@ -293,18 +323,7 @@ class _CounterState extends State<Counter> {
       );
     }
 
-    void onBoxSelect() {
-      setState(() {
-        _commit = true;
-        _jump();
-      });
-    }
-
-    // probably better to bubble up the state change somehow
-    void reloadState() {
-      setState(() {});
-    }
-
+    var boxSize = const Size.square(100);
     var mana = emplace(Flex(
       direction: ls ? Axis.horizontal : Axis.vertical,
       mainAxisSize: MainAxisSize.min,
@@ -318,12 +337,14 @@ class _CounterState extends State<Counter> {
               unicode: Unicodes.white,
               onSelect: onBoxSelect,
               forceUpdate: reloadState,
+              size: boxSize,
             ),
             CounterBox(
               parent: widget,
               unicode: Unicodes.blue,
               onSelect: onBoxSelect,
               forceUpdate: reloadState,
+              size: boxSize,
             ),
           ],
         ),
@@ -336,12 +357,14 @@ class _CounterState extends State<Counter> {
               unicode: Unicodes.black,
               onSelect: onBoxSelect,
               forceUpdate: reloadState,
+              size: boxSize,
             ),
             CounterBox(
               parent: widget,
               unicode: Unicodes.red,
               onSelect: onBoxSelect,
               forceUpdate: reloadState,
+              size: boxSize,
             ),
           ],
         ),
@@ -354,12 +377,14 @@ class _CounterState extends State<Counter> {
               unicode: Unicodes.green,
               onSelect: onBoxSelect,
               forceUpdate: reloadState,
+              size: boxSize,
             ),
             CounterBox(
               parent: widget,
               unicode: Unicodes.colorless,
               onSelect: onBoxSelect,
               forceUpdate: reloadState,
+              size: boxSize,
             ),
           ],
         ),
@@ -376,18 +401,21 @@ class _CounterState extends State<Counter> {
             unicode: Unicodes.poison,
             onSelect: onBoxSelect,
             forceUpdate: reloadState,
+            size: boxSize,
           ),
           CounterBox(
             parent: widget,
             unicode: Unicodes.storm,
             onSelect: onBoxSelect,
             forceUpdate: reloadState,
+            size: boxSize,
           ),
           CounterBox(
             parent: widget,
             unicode: Unicodes.damage,
             onSelect: onBoxSelect,
             forceUpdate: reloadState,
+            size: boxSize,
           ),
         ],
       ),
