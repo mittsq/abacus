@@ -95,6 +95,12 @@ class _CounterBoxState extends State<CounterBox>
     );
   }
 
+  void _savePointer(TapDownDetails details) {
+    var x = details.globalPosition.dx;
+    var y = details.globalPosition.dy;
+    _pointer = RelativeRect.fromLTRB(x, y, x, y);
+  }
+
   @override
   Widget build(BuildContext context) {
     var selected = widget.parent.counter.selected == widget.unicode;
@@ -102,38 +108,38 @@ class _CounterBoxState extends State<CounterBox>
 
     return Material(
       type: MaterialType.transparency,
-      child: InkWell(
-        onTap: () {
-          setState(() {
-            widget.onSelect!();
-
-            widget.parent.counter.selected =
-                selected ? Unicodes.life : widget.unicode;
-          });
-        },
-        onTapDown: (details) {
-          var x = details.globalPosition.dx;
-          var y = details.globalPosition.dy;
-          _pointer = RelativeRect.fromLTRB(x, y, x, y);
-        },
+      child: GestureDetector(
+        onTapDown: _savePointer,
+        onSecondaryTapDown: _savePointer,
+        onSecondaryTap: _openMenu,
         onLongPress: _openMenu,
-        child: Container(
-          width: widget.size.width,
-          height: widget.size.height,
-          color: boxColor?.withAlpha(50),
-          child: Center(
-            child: RotationTransition(
-              turns: _animation,
-              child: Padding(
-                padding: const EdgeInsets.all(5),
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    selected ? '\ue61b' : widget.unicode.code,
-                    style: TextStyle(
-                      fontFamily: 'Mana',
-                      color: boxColor,
-                      fontSize: 35,
+        child: InkWell(
+          onTap: () {
+            setState(() {
+              widget.onSelect!();
+
+              widget.parent.counter.selected =
+                  selected ? Unicodes.life : widget.unicode;
+            });
+          },
+          child: Container(
+            width: widget.size.width,
+            height: widget.size.height,
+            color: boxColor?.withAlpha(50),
+            child: Center(
+              child: RotationTransition(
+                turns: _animation,
+                child: Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      selected ? '\ue61b' : widget.unicode.code,
+                      style: TextStyle(
+                        fontFamily: 'Mana',
+                        color: boxColor,
+                        fontSize: 35,
+                      ),
                     ),
                   ),
                 ),

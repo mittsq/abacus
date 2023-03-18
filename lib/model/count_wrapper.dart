@@ -57,7 +57,7 @@ class CountWrapper {
   }
 
   void togglePin(Unicodes code) {
-    if (pins.contains(code)) {
+    if (isPinned(code)) {
       pins.remove(code);
     } else {
       pins.add(code);

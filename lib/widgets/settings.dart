@@ -189,33 +189,24 @@ class _SettingsState extends State<Settings> {
             onTap: _chooseAccent,
           ),
           ListTile(
-            title: Text('Number of Players ${players == 1 ? '⚠️' : ''}'),
-            trailing: SizedBox(
-              width: 150,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Slider(
-                      value: log(players) / log(2),
-                      min: 0,
-                      max: 2,
-                      divisions: 2,
-                      onChanged: (value) {
-                        setState(() {
-                          Settings.set(
-                            SettingsKey.players,
-                            players = pow(2, value).toInt(),
-                          );
-                        });
-                      },
-                    ),
-                  ),
-                  Text(
-                    '$players',
-                    textAlign: TextAlign.right,
-                  ),
-                ],
-              ),
+            title: const Text('Number of Players'),
+            trailing: SegmentedButton(
+              onSelectionChanged: (v) {
+                setState(() {
+                  Settings.set(SettingsKey.players, v.single as int);
+                });
+              },
+              segments: const [
+                ButtonSegment(
+                  value: 2,
+                  label: Text('2'),
+                ),
+                ButtonSegment(
+                  value: 4,
+                  label: Text('4'),
+                ),
+              ],
+              selected: {Settings.get<int>(SettingsKey.players)},
             ),
           ),
           ListTile(
