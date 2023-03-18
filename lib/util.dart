@@ -14,6 +14,7 @@ TextStyle? getTextStyle(BuildContext context) =>
           const TextStyle(
             fontFeatures: [FontFeature.tabularFigures()],
             fontWeight: FontWeight.normal,
+            fontSize: 120,
           ),
         );
 

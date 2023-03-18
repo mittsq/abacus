@@ -205,7 +205,7 @@ class _CounterState extends State<Counter> {
           unicode: e,
           onSelect: onBoxSelect,
           forceUpdate: reloadState,
-          size: const Size.fromHeight(40),
+          size: const Size.fromHeight(50),
         ),
       );
     });
@@ -267,13 +267,9 @@ class _CounterState extends State<Counter> {
               ),
             ),
           ),
-          AnimatedOpacity(
-            opacity: otherList.isEmpty ? 0 : 1,
-            duration: duration,
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Text.rich(TextSpan(children: otherList)),
-            ),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text.rich(TextSpan(children: otherList)),
           ),
           GestureDetector(
             onVerticalDragStart: _dragStart,
