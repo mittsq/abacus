@@ -4,7 +4,7 @@
     "start_url": ".",
     "display": "fullscreen",
     "background_color": "#000000",
-    "theme_color": "#000000",
+    "theme_color": "#FFFFFF",
     "description": "A simple, but feature-rich, counter for tabletop games.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
