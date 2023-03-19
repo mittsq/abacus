@@ -32,10 +32,11 @@ class MyApp extends StatelessWidget {
               // material you scheme is selected, but unavailable
               // default to cyan
               accent = accentColors.entries
-                  .where((element) => element.value == 'Cyan')
+                  .where((c) => c.value == 'Cyan')
                   .single
                   .key;
               Settings.set(SettingsKey.accent, accent);
+              debugPrint('Material You color scheme unavailable');
             }
 
             var scheme = (dynamicColor = dynD);

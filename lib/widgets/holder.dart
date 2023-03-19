@@ -150,7 +150,7 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
         }
       }
     }
-    print('Spinning to ${r.toStringAsPrecision(3)} with winner $winner');
+    debugPrint('Spinning to ${r.toStringAsPrecision(3)} with winner $winner');
 
     _needleController.reset();
     await Future.delayed(duration * 2);

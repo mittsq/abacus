@@ -52,7 +52,7 @@ class Settings extends StatefulWidget {
     }
 
     _cache[key] = value;
-    print('Saved $keyString: $value');
+    debugPrint('Saved $keyString: $value');
     return true;
   }
 
@@ -74,7 +74,7 @@ class Settings extends StatefulWidget {
       } else {
         value = prefs!.getString(keyString) as T;
       }
-      print('Loaded $keyString: $value');
+      debugPrint('Loaded $keyString: $value');
     }
 
     _cache[key] = value;
