@@ -140,8 +140,11 @@ class _CounterState extends State<Counter> {
 
     if (widget.counter.glow) {
       radius = 50.0;
-      border = (Theme.of(context).colorScheme.primary as MaterialColor)[100] ??
-          Colors.white;
+      border = Theme.of(context).colorScheme.primary;
+
+      if (Theme.of(context).colorScheme.primary is MaterialColor) {
+        border = (Theme.of(context).colorScheme.primary as MaterialColor)[100]!;
+      }
     }
 
     var rounded = const BorderRadius.all(Radius.circular(10));

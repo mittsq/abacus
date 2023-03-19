@@ -243,7 +243,7 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
       rightBottom = rightBottom.reversed.toList();
     }
 
-    var needleColor = Colors.white;
+    var needleColor = Theme.of(context).colorScheme.primary;
     if (Theme.of(context).colorScheme.primary is MaterialColor) {
       var mc = Theme.of(context).colorScheme.primary as MaterialColor;
       needleColor = mc[300] ?? needleColor;

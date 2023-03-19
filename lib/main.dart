@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:abacus/util.dart';
 import 'package:abacus/widgets/settings.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,30 +17,40 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  static ColorScheme? dynamicColor;
+
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: themeNotifier,
-      child: const Holder(),
-      builder: (context, child) {
-        var theme = ThemeData.dark(useMaterial3: true).copyWith(
-          colorScheme: ColorScheme.fromSwatch(
-            primarySwatch: Colors.primaries[Settings.get<int>(
-              SettingsKey.accent,
-            )],
-            brightness: Brightness.dark,
-          ),
-        );
+    return DynamicColorBuilder(
+      builder: (dynL, dynD) {
+        return AnimatedBuilder(
+          animation: themeNotifier,
+          child: const Holder(),
+          builder: (context, child) {
+            var accent = Settings.get<int>(SettingsKey.accent);
+            var scheme = (dynamicColor = dynD);
+            if (accent != -1) {
+              scheme = ColorScheme.fromSwatch(
+                primarySwatch: Colors.primaries[accent],
+                brightness: Brightness.dark,
+              );
+            }
 
-        return MaterialApp(
-          title: 'Abacus',
-          theme: theme,
-          home: Container(
-            color: Colors.black,
-            child: child,
-          ),
-          scrollBehavior: AppScrollBehavior(),
-          debugShowCheckedModeBanner: false,
+            var theme = ThemeData.dark(useMaterial3: true).copyWith(
+              colorScheme: scheme,
+            );
+
+            return MaterialApp(
+              title: 'Abacus',
+              theme: theme,
+              home: Container(
+                color: Colors.black,
+                child: child,
+              ),
+              scrollBehavior: AppScrollBehavior(),
+              debugShowCheckedModeBanner: false,
+            );
+          },
         );
       },
     );

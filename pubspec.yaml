@@ -2,7 +2,7 @@ name: abacus
 description: A simple, but feature-rich, counter for tabletop games.
 
 publish_to: 'none'
-version: 1.1.2
+version: 1.1.3
 environment:
   sdk: ">=2.17.0 <3.0.0"
 
@@ -14,6 +14,7 @@ dependencies:
   url_launcher: ^6.1.9
   loop_page_view: ^1.2.1
   package_info_plus: ^3.0.3
+  dynamic_color: ^1.6.2
 
 dev_dependencies:
   flutter_test:

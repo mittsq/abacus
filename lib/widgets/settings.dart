@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:abacus/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -112,29 +113,35 @@ class _SettingsState extends State<Settings> {
   }
 
   void _chooseAccent() {
-    var list = <Widget>[];
-
-    for (var i = 0; i < accentColors.length; ++i) {
-      list.add(
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: 4,
-            horizontal: 24,
-          ),
-          child: ListTile(
-            leading: SwatchCircle(color: Colors.primaries[i]),
-            title: Text(accentColors[i] ?? ''),
-            onTap: () {
-              Navigator.pop(context);
-              setState(() {
-                Settings.set(SettingsKey.accent, i);
-                // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
-                themeNotifier.notifyListeners();
-              });
-            },
-          ),
+    Widget generate(int i, Color color, String name) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 4,
+          horizontal: 24,
+        ),
+        child: ListTile(
+          leading: SwatchCircle(color: color),
+          title: Text(name),
+          onTap: () {
+            Navigator.pop(context);
+            setState(() {
+              Settings.set(SettingsKey.accent, i);
+              // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
+              themeNotifier.notifyListeners();
+            });
+          },
         ),
       );
+    }
+
+    var list = <Widget>[];
+
+    if (MyApp.dynamicColor != null) {
+      list.add(generate(-1, MyApp.dynamicColor!.primary, 'System'));
+    }
+
+    for (var i = 0; i < accentColors.length; ++i) {
+      list.add(generate(i, Colors.primaries[i], accentColors[i] ?? ''));
     }
 
     showDialog(
@@ -155,7 +162,11 @@ class _SettingsState extends State<Settings> {
     }
 
     var players = Settings.get<int>(SettingsKey.players);
-    var colorName = accentColors[Settings.get<int>(SettingsKey.accent)];
+    var accent = Settings.get<int>(SettingsKey.accent);
+    var colorName = accentColors[accent];
+    if (accent == -1) {
+      colorName = 'System';
+    }
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -195,7 +206,7 @@ class _SettingsState extends State<Settings> {
                 backgroundColor: MaterialStateProperty.resolveWith<Color?>(
                   (states) {
                     if (states.contains(MaterialState.selected)) {
-                      return Theme.of(context).colorScheme.primary;
+                      return Theme.of(context).colorScheme.primaryContainer;
                     }
                     return null;
                   },
