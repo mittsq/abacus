@@ -148,6 +148,10 @@ class _SettingsState extends State<Settings> {
       context: context,
       builder: (context) => SimpleDialog(
         title: const Text('Accent Color'),
+        insetPadding: const EdgeInsets.symmetric(
+          horizontal: 60,
+          vertical: 120,
+        ),
         children: list,
       ),
     );
@@ -220,10 +224,12 @@ class _SettingsState extends State<Settings> {
               segments: const [
                 ButtonSegment(
                   value: 2,
+                  icon: Icon(Icons.group_rounded),
                   label: Text('2'),
                 ),
                 ButtonSegment(
                   value: 4,
+                  icon: Icon(Icons.groups_rounded),
                   label: Text('4'),
                 ),
               ],
