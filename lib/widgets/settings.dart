@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:abacus/main.dart';
 import 'package:flutter/material.dart';
@@ -75,7 +74,7 @@ class Settings extends StatefulWidget {
       } else {
         value = prefs!.getString(keyString) as T;
       }
-      print('Loaded $key: $value');
+      print('Loaded $keyString: $value');
     }
 
     _cache[key] = value;
@@ -237,7 +236,8 @@ class _SettingsState extends State<Settings> {
             ),
           ),
           ListTile(
-            title: Text('Starting Life Total ${_isStartingValid ? '' : '⚠️'}'),
+            title:
+                Text('Starting Life Total ${_isStartingValid ? '' : '\u26a0'}'),
             trailing: SizedBox(
               width: 100,
               child: TextFormField(
@@ -339,7 +339,7 @@ class _SettingsState extends State<Settings> {
               },
               future: _getVersion(),
             ),
-            subtitle: const Text('Made with ❤ by mittsq using Flutter'),
+            subtitle: const Text('Made with \u2764 by mittsq using Flutter'),
             onTap: () => showLicensePage(context: context),
           ),
         ],
