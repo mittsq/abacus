@@ -1,4 +1,10 @@
 # Changelog
+## v1.1.4
+* Default color scheme is now Material You if available.
+* All schemes follow Material3 saturation guidelines.
+* More theming in general.
+* Small Settings UI changes.
+
 ## v1.1.3
 * Integrated Material You.
 

@@ -5,6 +5,7 @@ import 'package:abacus/model/count_wrapper.dart';
 import 'package:abacus/util.dart';
 import 'package:abacus/widgets/box.dart';
 import 'package:abacus/widgets/settings.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:loop_page_view/loop_page_view.dart';
 
@@ -131,9 +132,13 @@ class _CounterState extends State<Counter> {
     );
     var radius = _commit ? 0.0 : 50.0 * ratio;
     if (doColor && !_commit) {
+      var ac = Theme.of(context).colorScheme.primary;
+      var red = color.withRed(200).harmonizeWith(ac);
+      var green = color.withGreen(200).harmonizeWith(ac);
+
       border = Color.lerp(
         color,
-        diff < 0 ? color.withRed(200) : color.withGreen(200),
+        diff < 0 ? red : green,
         ratio,
       )!;
     }

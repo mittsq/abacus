@@ -1,4 +1,4 @@
-# Abacus
+# 🧮 Abacus
 
 A simple counting app for tabletop games such as Magic: The Gathering.
 Abacus attempts to combine the best features of other life counters while leaving out the worst features, all while looking pretty in the process.
@@ -6,7 +6,7 @@ Abacus attempts to combine the best features of other life counters while leavin
 Request a feature or report a bug on the [Issues](https://github.com/mittsq/abacus/issues) page.
 See the changelog [here](./CHANGELOG.md).  
 Mana symbols provided by [Andrew Gioia's Mana font](https://github.com/andrewgioia/mana).  
-Abacus is licensed under the [GNU Affero GPL v3](https://opensource.org/license/agpl-v3/).
+Abacus is licensed under [GNU Affero GPL v3](https://opensource.org/license/agpl-v3/).
 
 ## Features
 
@@ -19,16 +19,10 @@ Abacus is licensed under the [GNU Affero GPL v3](https://opensource.org/license/
 * Options to enable only what you need.
 * Support for literally every relevant platform.
 
----
+## Download
+Abacus should run on all platforms; precompiled release versions for some of them are available.  
+Note that the native Android version is signed with debug keys, and may need an uninstall-reinstall.
 
-## Screenshots
-### Main counter screen at 2 and 4 players
-![Two Players](img/main.png)
-![Four Players](img/four.png)
-
-### Expanded menu with mana and other counter buttons visible
-![Counters](img/counters.png)
-![Effects](img/effects.png)
-
-### The settings screen
-![Settings](img/settings.png)
+* [Latest release](https://github.com/mittsq/abacus/releases/tag/latest)
+* [PWA Web Version](https://159276843.xyz)
+* [Native Android Version](https://github.com/mittsq/abacus/releases/download/latest/app-release.apk)
