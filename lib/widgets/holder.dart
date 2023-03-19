@@ -247,6 +247,8 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
     if (Theme.of(context).colorScheme.primary is MaterialColor) {
       var mc = Theme.of(context).colorScheme.primary as MaterialColor;
       needleColor = mc[300] ?? needleColor;
+    } else {
+      needleColor = Color.lerp(needleColor, Colors.white, 0.4)!;
     }
 
     return Stack(

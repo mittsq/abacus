@@ -144,6 +144,8 @@ class _CounterState extends State<Counter> {
 
       if (Theme.of(context).colorScheme.primary is MaterialColor) {
         border = (Theme.of(context).colorScheme.primary as MaterialColor)[100]!;
+      } else {
+        border = Color.lerp(border, Colors.white, 0.8)!;
       }
     }
 
