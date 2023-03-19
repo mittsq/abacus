@@ -124,8 +124,7 @@ class _SettingsState extends State<Settings> {
             Navigator.pop(context);
             setState(() {
               Settings.set(SettingsKey.accent, i);
-              // ignore: invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member
-              themeNotifier.notifyListeners();
+              ThemeNotifier.instance.notify();
             });
           },
         ),

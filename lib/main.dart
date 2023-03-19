@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     return DynamicColorBuilder(
       builder: (dynL, dynD) {
         return AnimatedBuilder(
-          animation: themeNotifier,
+          animation: ThemeNotifier.instance,
           child: const Holder(),
           builder: (context, child) {
             var accent = Settings.get<int>(SettingsKey.accent);

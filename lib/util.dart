@@ -38,8 +38,6 @@ enum Unicodes {
   String toString() => code;
 }
 
-final ChangeNotifier themeNotifier = ChangeNotifier();
-
 const Map<int, String> accentColors = {
   0: 'Red',
   1: 'Pink',
@@ -60,3 +58,13 @@ const Map<int, String> accentColors = {
   16: 'Brown',
   17: 'Blue Grey',
 };
+
+class ThemeNotifier with ChangeNotifier {
+  ThemeNotifier._();
+
+  static final ThemeNotifier instance = ThemeNotifier._();
+
+  void notify() {
+    notifyListeners();
+  }
+}
