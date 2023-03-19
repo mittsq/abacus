@@ -23,11 +23,23 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return DynamicColorBuilder(
       builder: (dynL, dynD) {
+        var accent = Settings.get<int>(SettingsKey.accent);
+        if (dynL == null && dynD == null && accent == -1) {
+          // material you scheme is selected, but unavailable
+          // default to cyan
+          Settings.set(
+            SettingsKey.accent,
+            accentColors.entries
+                .where((element) => element.value == 'Cyan')
+                .single
+                .key,
+          );
+        }
+
         return AnimatedBuilder(
           animation: themeNotifier,
           child: const Holder(),
           builder: (context, child) {
-            var accent = Settings.get<int>(SettingsKey.accent);
             var scheme = (dynamicColor = dynD);
             if (accent != -1) {
               scheme = ColorScheme.fromSwatch(

@@ -18,7 +18,7 @@ enum SettingsKey {
   color(true),
   showCounters(true),
   swipeSens(35),
-  accent(0),
+  accent(-1),
   ;
 
   final dynamic defaultValue;
