@@ -1,4 +1,14 @@
 # Changelog
+## v1.1.3
+* Integrated Material You.
+
+## v1.1.2
+* Needles and decider glow match accent color selection.
+
+## v1.1.1
+* Allowed right-click to open counter menu.
+* Use a neat Material3 button for player count.
+
 ## v1.1.0
 * Added accent color customization.
 * Added the ability to pin counters to the main screen.
