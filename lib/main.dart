@@ -75,12 +75,3 @@ class AppScrollBehavior extends MaterialScrollBehavior {
         PointerDeviceKind.trackpad,
       };
 }
-
-class ThemeNotifier extends ChangeNotifier {
-  int get accent => Settings.get<int>(SettingsKey.accent);
-
-  set accent(int value) {
-    Settings.set(SettingsKey.accent, value);
-    notifyListeners();
-  }
-}
