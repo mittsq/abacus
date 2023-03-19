@@ -1,12 +1,11 @@
 import 'dart:ui';
 
 import 'package:abacus/util.dart';
+import 'package:abacus/widgets/holder.dart';
 import 'package:abacus/widgets/settings.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'widgets/holder.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

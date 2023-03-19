@@ -1,8 +1,7 @@
+import 'package:abacus/util.dart';
+import 'package:abacus/widgets/counter.dart';
 import 'package:abacus/widgets/settings.dart';
 import 'package:flutter/material.dart';
-
-import '../util.dart';
-import 'counter.dart';
 
 class CounterBox extends StatefulWidget {
   const CounterBox({

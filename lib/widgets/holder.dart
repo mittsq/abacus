@@ -2,13 +2,12 @@ import 'dart:math' as math;
 
 import 'package:abacus/model/count_wrapper.dart';
 import 'package:abacus/util.dart';
+import 'package:abacus/widgets/counter.dart';
+import 'package:abacus/widgets/needle.dart';
 import 'package:abacus/widgets/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wakelock/wakelock.dart';
-
-import 'counter.dart';
-import 'needle.dart';
 
 class Holder extends StatefulWidget {
   const Holder({Key? key}) : super(key: key);
