@@ -1,4 +1,16 @@
 # Changelog
+## v1.1.7
+* Made the icon better.
+
+## v1.1.6
+* Added warning for browsers that do not support wakelock.
+  * Safari requires 16.4 or greater.
+  * Firefox is straight-up unsupported.
+  * Chrome and derivatives are fully supported.
+
+## v1.1.5
+* Added an icon, likely temporary.
+
 ## v1.1.4
 * Default color scheme is now Material You if available.
 * All schemes follow Material3 saturation guidelines.
