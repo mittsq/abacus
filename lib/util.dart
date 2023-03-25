@@ -6,6 +6,26 @@ extension NumExtensions on double {
   double roundTo(double value) => (this / value).roundToDouble() * value;
 }
 
+extension ColorExtensions on Color {
+  Color? materialLerp({required int shade, int primary = 500}) {
+    if (shade < primary) {
+      return Color.lerp(
+        Colors.white,
+        this,
+        (shade / primary).clamp(0.0, 1.0),
+      );
+    } else if (shade > primary) {
+      return Color.lerp(
+        this,
+        Colors.black,
+        ((shade - primary) / (1000 - primary)).clamp(0.0, 1.0),
+      );
+    }
+
+    return this;
+  }
+}
+
 bool isLandscape(BuildContext context) =>
     MediaQuery.of(context).orientation == Orientation.landscape;
 

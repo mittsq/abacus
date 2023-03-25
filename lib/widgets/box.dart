@@ -104,7 +104,7 @@ class _CounterBoxState extends State<CounterBox>
   Widget build(BuildContext context) {
     var selected = widget.parent.counter.selected == widget.unicode;
     var boxColor = widget.unicode.color ??
-        Color.lerp(Theme.of(context).colorScheme.primary, Colors.white, 0.8);
+        Theme.of(context).colorScheme.primary.materialLerp(shade: 100);
 
     return Material(
       type: MaterialType.transparency,

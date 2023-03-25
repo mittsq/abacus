@@ -118,7 +118,7 @@ class _SettingsState extends State<Settings> {
           horizontal: 24,
         ),
         child: ListTile(
-          leading: SwatchCircle(color: color),
+          leading: _SwatchCircle(color: color),
           title: Text(name),
           onTap: () {
             Navigator.pop(context);
@@ -162,7 +162,6 @@ class _SettingsState extends State<Settings> {
       });
     }
 
-    var players = Settings.get<int>(SettingsKey.players);
     var accent = Settings.get<int>(SettingsKey.accent);
     var colorName = accentColors[accent];
     if (accent == -1) {
@@ -194,7 +193,7 @@ class _SettingsState extends State<Settings> {
                       ),
                     ),
                   ),
-                  const SwatchCircle(),
+                  const _SwatchCircle(),
                 ],
               ),
             ),
@@ -346,8 +345,8 @@ class _SettingsState extends State<Settings> {
   }
 }
 
-class SwatchCircle extends StatelessWidget {
-  const SwatchCircle({super.key, this.color});
+class _SwatchCircle extends StatelessWidget {
+  const _SwatchCircle({super.key, this.color});
 
   final Color? color;
 

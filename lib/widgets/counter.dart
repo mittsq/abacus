@@ -136,11 +136,7 @@ class _CounterState extends State<Counter> {
       var red = color.withRed(200).harmonizeWith(ac);
       var green = color.withGreen(200).harmonizeWith(ac);
 
-      border = Color.lerp(
-        color,
-        diff < 0 ? red : green,
-        ratio,
-      )!;
+      border = Color.lerp(color, diff < 0 ? red : green, ratio)!;
     }
 
     if (widget.counter.glow) {
@@ -150,7 +146,7 @@ class _CounterState extends State<Counter> {
       if (Theme.of(context).colorScheme.primary is MaterialColor) {
         border = (Theme.of(context).colorScheme.primary as MaterialColor)[100]!;
       } else {
-        border = Color.lerp(border, Colors.white, 0.8)!;
+        border = border.materialLerp(shade: 100)!;
       }
     }
 
