@@ -1,4 +1,9 @@
 # Changelog
+## v1.1.8
+* Bug fixes.
+  * Reworked browser warning to compile on all platforms.
+  * Web manifest pointed to wrong image assets.
+
 ## v1.1.7
 * Made the icon better.
 
