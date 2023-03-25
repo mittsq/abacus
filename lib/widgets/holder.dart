@@ -5,11 +5,12 @@ import 'package:abacus/util.dart';
 import 'package:abacus/widgets/counter.dart';
 import 'package:abacus/widgets/needle.dart';
 import 'package:abacus/widgets/settings.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:platform_detect/platform_detect.dart';
-import 'package:wakelock/wakelock.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:wakelock/wakelock.dart';
+import 'package:web_browser_detect/web_browser_detect.dart';
 
 class Holder extends StatefulWidget {
   const Holder({Key? key}) : super(key: key);
@@ -53,53 +54,53 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
       () => Wakelock.enable(),
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      var safari = browser.isSafari &&
-          VersionRange(
-            min: Version(16, 4, 0),
-            includeMin: true,
-          ).allows(browser.version);
+    if (kIsWeb) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        var b = Browser();
 
-      var firefox = browser.isFirefox;
-      var limited = safari || firefox;
-
-      if (limited) {
-        var text =
-            'Abacus is unable to keep the screen active on this device. ';
-
-        if (safari) {
-          text += 'Apple has fixed this issue in Safari 16.4. '
-              'Please update your browser. ';
-        } else if (firefox) {
-          text += 'Mozilla has yet to implement wakelock support in Firefox. '
-              'Please use a different browser. ';
-        }
-
-        // ignore: use_build_context_synchronously
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text(
-                  'Okay',
-                  textAlign: TextAlign.end,
-                ),
-              ),
-            ],
-            title: const Text('Unsupported Browser'),
-            icon: Icon(
-              Icons.warning_rounded,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            content: SingleChildScrollView(
-              child: Text(text),
-            ),
-          ),
+        var version = VersionRange(
+          max: null,
+          min: Version(16, 4, 0),
+          includeMin: true,
         );
-      }
-    });
+
+        var limited = b.browserAgent == BrowserAgent.Safari;
+        limited = limited && version.allows(Version.parse(b.version));
+        limited = limited || b.browserAgent == BrowserAgent.Firefox;
+
+        if (limited) {
+          var text =
+              'Abacus is unable to keep the screen active on this device. '
+              'Please use Chrome (or its derivatives) for the best experience. \n\n'
+              'Safari requires version 16.4 or greater. \n'
+              'Firefox is currently unsupported. \n';
+
+          // ignore: use_build_context_synchronously
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text(
+                    'Okay',
+                    textAlign: TextAlign.end,
+                  ),
+                ),
+              ],
+              title: const Text('Unsupported Browser'),
+              icon: Icon(
+                Icons.warning_rounded,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              content: SingleChildScrollView(
+                child: Text(text),
+              ),
+            ),
+          );
+        }
+      });
+    }
   }
 
   @override
