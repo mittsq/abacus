@@ -1,4 +1,7 @@
 # Changelog
+## v1.1.9
+* Fixed an issue where Material You theme selection would be incorrectly overriden on some platforms.
+
 ## v1.1.8
 * Bug fixes.
   * Reworked browser warning to compile on all platforms.

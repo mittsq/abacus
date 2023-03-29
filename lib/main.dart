@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   static ColorScheme? dynamicColor;
+  static bool _ready = false;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +28,11 @@ class MyApp extends StatelessWidget {
           child: const Holder(),
           builder: (context, child) {
             var accent = Settings.get<int>(SettingsKey.accent);
-            if (dynL == null && dynD == null && accent == -1) {
+            WidgetsBinding.instance.waitUntilFirstFrameRasterized.then((_) {
+              _ready = true;
+              ThemeNotifier.instance.notify();
+            });
+            if (_ready && dynL == null && dynD == null && accent == -1) {
               // material you scheme is selected, but unavailable
               // default to cyan
               accent = accentColors.entries

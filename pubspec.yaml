@@ -2,7 +2,7 @@ name: abacus
 description: A simple, but feature-rich, counter for tabletop games.
 
 publish_to: 'none'
-version: 1.1.8
+version: 1.1.9
 environment:
   sdk: ">=2.17.0 <3.0.0"
 
