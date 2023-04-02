@@ -1,6 +1,9 @@
 # Changelog
+## v1.1.10
+* Fixed an issue where the context menu would be upside down for inverted players.
+
 ## v1.1.9
-* Fixed an issue where Material You theme selection would be incorrectly overriden on some platforms.
+* Fixed an issue where Material You theme selection would be incorrectly overridden on some platforms.
 
 ## v1.1.8
 * Bug fixes.

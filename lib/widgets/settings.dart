@@ -346,7 +346,7 @@ class _SettingsState extends State<Settings> {
 }
 
 class _SwatchCircle extends StatelessWidget {
-  const _SwatchCircle({super.key, this.color});
+  const _SwatchCircle({this.color});
 
   final Color? color;
 

@@ -73,7 +73,7 @@ class _HolderState extends State<Holder> with TickerProviderStateMixin {
               'Abacus is unable to keep the screen active on this device. '
               'Please use Chrome (or its derivatives) for the best experience. \n\n'
               'Safari requires version 16.4 or greater. \n'
-              'Firefox is currently unsupported. \n';
+              'Firefox is currently unsupported. ';
 
           // ignore: use_build_context_synchronously
           showDialog(

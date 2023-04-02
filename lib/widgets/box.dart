@@ -66,23 +66,26 @@ class _CounterBoxState extends State<CounterBox>
 
   void _openMenu() {
     var isPinned = widget.parent.counter.isPinned(widget.unicode);
+    var doFlip = widget.parent.isFlipped && !isLandscape(context);
 
-    showMenu(
-      context: context,
-      position: _pointer,
-      items: [
-        PopupMenuItem(
-          onTap: _clear,
+    var items = [
+      PopupMenuItem(
+        onTap: _clear,
+        child: RotatedBox(
+          quarterTurns: doFlip ? 2 : 0,
           child: const ListTile(
             leading: Icon(Icons.delete_forever_rounded),
             title: Text('Reset'),
           ),
         ),
-        PopupMenuItem(
-          onTap: () {
-            widget.parent.counter.togglePin(widget.unicode);
-            widget.forceUpdate();
-          },
+      ),
+      PopupMenuItem(
+        onTap: () {
+          widget.parent.counter.togglePin(widget.unicode);
+          widget.forceUpdate();
+        },
+        child: RotatedBox(
+          quarterTurns: doFlip ? 2 : 0,
           child: ListTile(
             leading: Icon(
               isPinned ? Icons.close_rounded : Icons.push_pin_rounded,
@@ -90,7 +93,13 @@ class _CounterBoxState extends State<CounterBox>
             title: Text(isPinned ? 'Unpin' : 'Pin'),
           ),
         ),
-      ],
+      ),
+    ];
+
+    showMenu(
+      context: context,
+      position: _pointer,
+      items: doFlip ? items.reversed.toList() : items,
     );
   }
 
